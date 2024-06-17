@@ -12,7 +12,8 @@ class TicketTypeRepository {
     try {
       const [newTicketType] = await db('ticketTypes')
         .insert(ticketType)
-        .returning('*');
+        .returning('*')
+        .first();
       return newTicketType;
     } catch (error) {
       logger.error('Failed to create ticket type:', error);
@@ -22,8 +23,8 @@ class TicketTypeRepository {
 
   async findOne(id: string): Promise<ITicketType> {
     try {
-      const ticketTypes = await db('ticketTypes').where('id', id);
-      return ticketTypes[0];
+      const ticketType = await db('ticketTypes').where('id', id).first();
+      return ticketType;
     } catch (error) {
       logger.error('Failed to read ticket type:', error);
       return undefined;
@@ -48,20 +49,11 @@ class TicketTypeRepository {
       const updatedTicketType = await db('ticketTypes')
         .where('id', id)
         .update(ticketType)
-        .returning('*');
-      return updatedTicketType[0];
+        .returning('*')
+        .first();
+      return updatedTicketType;
     } catch (error) {
       logger.error('Failed to update ticket type:', error);
-      return undefined;
-    }
-  }
-
-  async delete(id: string): Promise<boolean> {
-    try {
-      const result = await db('ticketTypes').where('id', id).delete();
-      return result > 0;
-    } catch (error) {
-      logger.error('Failed to delete ticket type:', error);
       return undefined;
     }
   }
@@ -71,7 +63,22 @@ class TicketTypeRepository {
       const result = await db('ticketTypes').where('id', id).delete();
       return result > 0;
     } catch (error) {
-      logger.error('Failed to hard delete ticket type:', error);
+      logger.error('Failed to delete ticket type:', error);
+      return undefined;
+    }
+  }
+
+  async softDelete(id: string): Promise<boolean> {
+    try {
+      const resp = await db('ticketTypes')
+        .where('id', id)
+        .update({ deletedAt: new Date() });
+      if (resp === 1) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      logger.error('Failed to delete ticket type:', error);
       return undefined;
     }
   }

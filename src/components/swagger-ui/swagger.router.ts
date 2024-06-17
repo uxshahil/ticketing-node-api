@@ -1,11 +1,9 @@
 import config from '@config/config';
-import { Router } from 'express';
-import swaggerUi, { SwaggerOptions } from 'swagger-ui-express';
-
 import consts from '@config/consts';
-import { swaggerForbidden } from '@core/middlewares/swagger.middleware';
-
+import swaggerForbidden from '@core/middlewares/swagger.middleware';
+import { Router } from 'express';
 import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUi, { SwaggerOptions } from 'swagger-ui-express';
 
 const options: SwaggerOptions = {
   definition: {
@@ -27,7 +25,7 @@ const options: SwaggerOptions = {
       },
     },
   },
-  apis: ['./src/@core/routers/*.ts', './src/@core/controllers/*.ts'],
+  apis: ['./src/core/routers/*.ts', './src/core/controllers/*.ts'],
 };
 
 const specs = swaggerJSDoc(options);

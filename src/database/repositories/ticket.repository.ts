@@ -20,8 +20,8 @@ class TicketRepository {
 
   async findOne(id: string): Promise<ITicket> {
     try {
-      const tickets = await db('tickets').where('id', id);
-      return tickets[0];
+      const ticket = await db('tickets').where('id', id).first();
+      return ticket;
     } catch (error) {
       logger.error('Failed to read ticket:', error);
       return undefined;
@@ -43,23 +43,22 @@ class TicketRepository {
     take: number,
   ): Promise<[ITicket[], number, number]> {
     try {
-      const totalItemsQuery = await db.raw(
-        `SELECT COUNT(*) as total FROM tickets
-         WHERE "deletedAt" IS NULL;`,
-      );
+      const totalItemsQuery = await db('tickets')
+        .count('* as total')
+        .whereNull('deletedAt')
+        .first();
 
-      const totalItems = totalItemsQuery.rows[0].total;
+      const totalItems = totalItemsQuery.total;
 
       // Calculate total pages based on the total items and items per page (take)
       const totalPages = Math.ceil(totalItems / take);
 
-      const res = await db.raw(
-        `SELECT * FROM tickets
-          ORDER BY "createdAt"
-          LIMIT ${take} OFFSET ${skip};`,
-      );
+      const res = await db('tickets')
+        .orderBy('createdAt')
+        .limit(take)
+        .offset(skip);
 
-      return [res.rows, totalItems, totalPages];
+      return [res, totalItems, totalPages];
     } catch (error) {
       logger.error('Failed to read users:', error);
       return undefined;
@@ -71,8 +70,9 @@ class TicketRepository {
       const updatedTicket = await db('tickets')
         .where('id', id)
         .update(ticket)
-        .returning('*');
-      return updatedTicket[0];
+        .returning('*')
+        .first();
+      return updatedTicket;
     } catch (error) {
       logger.error('Failed to update ticket:', error);
       return undefined;

@@ -1,3 +1,4 @@
+import convertKeysToCamelCase from 'database/utils/naming-convention-mapper';
 import { knexSnakeCaseMappers } from 'objection';
 
 interface DbConnection {
@@ -15,9 +16,10 @@ interface MigrationConfig {
 }
 
 interface EnvironmentConfig {
-  client: string;
+  client: 'postgresql' | 'mysql' | 'sqlite3' | 'oracle' | 'mssql'; // Add other clients as needed
   connection: DbConnection;
   migrations: MigrationConfig;
+  postProcessResponse?: (result: any, queryContext: any) => any; // Adjust the types as needed
 }
 
 interface Config {
@@ -43,6 +45,9 @@ const dbConfig: Config = {
       directory: 'src/database/migrations',
     },
     ...knexSnakeCaseMappers(),
+    postProcessResponse: (result) => {
+      return convertKeysToCamelCase(result);
+    },
   },
   development: {
     client: 'postgresql',
@@ -59,6 +64,9 @@ const dbConfig: Config = {
       directory: 'src/database/migrations',
     },
     ...knexSnakeCaseMappers(),
+    postProcessResponse: (result) => {
+      return convertKeysToCamelCase(result);
+    },
   },
   production: {
     client: 'postgresql',
@@ -75,6 +83,9 @@ const dbConfig: Config = {
       directory: 'src/database/migrations',
     },
     ...knexSnakeCaseMappers(),
+    postProcessResponse: (result) => {
+      return convertKeysToCamelCase(result);
+    },
   },
 };
 

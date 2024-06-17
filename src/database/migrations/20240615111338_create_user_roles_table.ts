@@ -5,10 +5,10 @@ export async function up(knex: Knex): Promise<void> {
     table
       .uuid('id', { primaryKey: true, useBinaryUuid: true })
       .defaultTo(knex.raw('uuid_generate_v4()'));
-    table.enum('userRole', ['admin', 'employee', 'superadmin']).notNullable();
+    table.enum('user_role', ['admin', 'employee', 'superadmin']).notNullable();
     table.string('description', 50);
-    table.timestamps(true, true, true);
-    table.timestamp('deletedAt');
+    table.timestamps(true, true);
+    table.timestamp('deleted_at');
   });
 }
 

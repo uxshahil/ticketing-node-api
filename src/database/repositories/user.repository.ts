@@ -27,9 +27,9 @@ class UserRepository {
 
         const [newUser] = (await trx('users')
           .insert({
-            firstName: createUser.firstName,
-            lastName: createUser.lastName,
-            profilePic: createUser.profilePic,
+            first_name: createUser.firstName,
+            last_name: createUser.lastName,
+            profile_pic: createUser.profilePic,
             loginId,
           })
           .returning('*')) as IUser[];
@@ -51,13 +51,22 @@ class UserRepository {
 
   async findOne(id: string): Promise<IUser> {
     try {
-      const users = await db.raw(
-        `SELECT u.id, u."firstName", u."lastName", u."profilePic", u."loginId",
-        l.email, l.password, l.jwt  FROM users u
-        LEFT JOIN logins l ON u."loginId" = l.id
-        WHERE u.id = '${id}' AND u."deletedAt" IS NULL;`,
-      );
-      return users.rows[0];
+      const users = await db('users as u')
+        .select(
+          'u.id',
+          'u.firstName',
+          'u.lastName',
+          'u.profilePic',
+          'u.loginId',
+          'l.email',
+          'l.password',
+          'l.jwt',
+        )
+        .leftJoin('logins as l', 'u.loginId', 'l.id')
+        .where('u.id', id)
+        .andWhere('u.deletedAt', null)
+        .first();
+      return users;
     } catch (error) {
       logger.error('Failed to read user:', error);
       return undefined;
@@ -66,13 +75,21 @@ class UserRepository {
 
   async findAll(): Promise<IUser[]> {
     try {
-      const users = await db.raw(
-        `SELECT u.id, u."firstName", u."lastName", u."profilePic", u."loginId",
-        l.email, l.password, l.jwt  FROM users u
-        LEFT JOIN logins l ON u."loginId" = l.id
-        WHERE u."deletedAt" IS NULL;`,
-      );
-      return users.rows;
+      const users = await db('users as u')
+        .select(
+          'u.id',
+          'u.firstName',
+          'u.lastMame',
+          'u.profilePic',
+          'u.loginId',
+          'l.email',
+          'l.password',
+          'l.jwt',
+        )
+        .leftJoin('logins as l', 'u.loginId', 'l.id')
+        .whereNull('u.deletedAt')
+        .first();
+      return users;
     } catch (error) {
       logger.error('Failed to read users:', error);
       return undefined;
@@ -84,28 +101,34 @@ class UserRepository {
     take: number,
   ): Promise<[IUser[], number, number]> {
     try {
-      const totalItemsQuery = await db.raw(
-        `SELECT COUNT(*) as total FROM users u
-         LEFT JOIN logins l ON u."loginId" = l.id
-         WHERE u."deletedAt" IS NULL;`,
-      );
+      const totalItemsQuery = await db('users as u')
+        .count('* as total')
+        .leftJoin('logins as l', 'u.loginId', 'l.id')
+        .whereNull('u.deletedAt')
+        .first();
 
-      const totalItems = totalItemsQuery.rows[0].total;
+      const totalItems = parseInt(totalItemsQuery.total, 10);
 
-      // Calculate total pages based on the total items and items per page (take)
+      const res = await db('users as u')
+        .select(
+          'u.id',
+          'u.firstName',
+          'u.lastName',
+          'u.profilePic',
+          'u.loginId',
+          'l.email',
+          'l.password',
+          'l.jwt',
+        )
+        .leftJoin('logins as l', 'u.loginId', 'l.id')
+        .whereNull('u.deletedAt')
+        .orderBy('u.createdAt')
+        .limit(take)
+        .offset(skip);
+
       const totalPages = Math.ceil(totalItems / take);
 
-      const res = await db.raw(
-        `SELECT u.id, u."firstName", u."lastName", u."profilePic", u."loginId",
-          l.email, l.password, l.jwt
-          FROM users u
-          LEFT JOIN logins l ON u."loginId" = l.id
-          WHERE u."deletedAt" IS NULL
-          ORDER BY u."createdAt"
-          LIMIT ${take} OFFSET ${skip};`,
-      );
-
-      return [res.rows, totalItems, totalPages];
+      return [res, totalItems, totalPages];
     } catch (error) {
       logger.error('Failed to read users:', error);
       return undefined;
@@ -129,15 +152,25 @@ class UserRepository {
           .update({ password: user.password })
           .returning('*');
 
-        const users = await trx.raw(
-          `SELECT u.id, u."firstName", u."lastName", u."profilePic", u."loginId",
-          l.email, l.password, l.jwt FROM users u
-          LEFT JOIN logins l ON u."loginId" = l.id
-          WHERE u.id = '${id}' AND u."deletedAt" IS NULL`,
-        );
+        const users = await trx('users as u')
+          .select(
+            'u.id',
+            'u.firstName',
+            'u.lastName',
+            'u.profilePic',
+            'u.loginId',
+            'l.email',
+            'l.password',
+            'l.jwt',
+          )
+          .leftJoin('logins as l', 'u.loginId', 'l.id')
+          .where('u.id', id)
+          .andWhere('u.deletedAt', null)
+          .first();
 
-        return users.rows[0];
+        return users;
       });
+
       return res;
     } catch (error) {
       logger.error('Failed to update user:', error);
@@ -172,13 +205,22 @@ class UserRepository {
 
   async findUserByEmail(email: string): Promise<IUser> {
     try {
-      const users = await db.raw(
-        `SELECT u.id, u."firstName", u."lastName", u."profilePic", u."loginId",
-        l.email, l.password, l.jwt  FROM users u
-        LEFT JOIN logins l ON u."loginId" = l.id
-        WHERE l.email = '${email}' AND u."deletedAt" IS NULL;`,
-      );
-      return users.rows[0];
+      const users = await db('users as u')
+        .select(
+          'u.id',
+          'u.firstName',
+          'u.lastName',
+          'u.profilePic',
+          'u.loginId',
+          'l.email',
+          'l.password',
+          'l.jwt',
+        )
+        .leftJoin('logins as l', 'u.loginId', 'l.id')
+        .where('l.email', email)
+        .andWhere('u.deletedAt', null)
+        .first();
+      return users;
     } catch (error) {
       logger.error('Failed to read user:', error);
       return undefined;

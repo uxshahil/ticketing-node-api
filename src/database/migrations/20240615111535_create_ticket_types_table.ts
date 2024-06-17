@@ -7,8 +7,8 @@ export async function up(knex: Knex): Promise<void> {
       .defaultTo(knex.raw('uuid_generate_v4()'));
     table.string('title', 50).notNullable();
     table.string('description', 50);
-    table.timestamps(true, true, true);
-    table.timestamp('deletedAt');
+    table.timestamps(true, true);
+    table.timestamp('deleted_at');
   });
 }
 

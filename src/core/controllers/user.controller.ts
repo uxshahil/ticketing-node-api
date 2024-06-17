@@ -40,12 +40,17 @@ export class UserController extends ApiBaseController {
   };
 
   findUsers = async (req: Request, res: Response) => {
-    const { page, pageSize } = req.params;
-    const pageInt = parseInt(page, 10) || 1;
-    const pageSizeInt = parseInt(pageSize, 10) || 10; // Default page size
+    // Ensure page and pageSize are strings before parsing
+    const page =
+      typeof req.query.page === 'string' ? parseInt(req.query.page, 10) : 1;
+    const pageSize =
+      typeof req.query.pageSize === 'string'
+        ? parseInt(req.query.pageSize, 10)
+        : 10; // Default page size
+
     const { success, data, error } = await this.userService.findUsersPaginated(
-      pageInt,
-      pageSizeInt,
+      page,
+      pageSize,
     );
     if (success) {
       this.okWithPagination(res, data, 'Successfully fetched all user data');

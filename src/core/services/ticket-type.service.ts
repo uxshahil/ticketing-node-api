@@ -59,7 +59,7 @@ class TicketTypeService {
   }
 
   async delete(id: string): Promise<{ success: boolean; error?: string }> {
-    const success = await this.ticketTypeRepository.delete(id);
+    const success = await this.ticketTypeRepository.softDelete(id);
     if (success) {
       return { success: true };
     }

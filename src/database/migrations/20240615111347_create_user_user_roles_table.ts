@@ -6,17 +6,17 @@ export async function up(knex: Knex): Promise<void> {
       .uuid('id', { primaryKey: true, useBinaryUuid: true })
       .defaultTo(knex.raw('uuid_generate_v4()'));
     table
-      .uuid('userId')
+      .uuid('user_id')
       .references('users.id')
       .deferrable('deferred')
       .onDelete('CASCADE');
     table
-      .uuid('userRolesId')
+      .uuid('user_roles_id')
       .references('userRoles.id')
       .deferrable('deferred')
       .onDelete('CASCADE');
-    table.timestamps(true, true, true);
-    table.timestamp('deletedAt');
+    table.timestamps(true, true);
+    table.timestamp('deleted_at');
   });
 }
 

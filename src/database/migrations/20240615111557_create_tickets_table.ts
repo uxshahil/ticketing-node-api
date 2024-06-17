@@ -9,7 +9,7 @@ export async function up(knex: Knex): Promise<void> {
     table.text('description');
     table.integer('number');
     table
-      .uuid('createdBy')
+      .uuid('created_by')
       .references('users.id')
       .deferrable('deferred')
       .onDelete('SET NULL'); // Assuming 'users' table uses 'id' as primary key
@@ -18,18 +18,18 @@ export async function up(knex: Knex): Promise<void> {
       .references('ticketTypes.id')
       .deferrable('deferred');
     table
-      .uuid('assignedTo')
+      .uuid('assigned_to')
       .references('users.id')
       .deferrable('deferred')
       .onDelete('SET NULL'); // Assuming 'users' table uses 'id' as primary key
-    table.timestamp('dueDate');
+    table.timestamp('due_date');
     table.timestamp('completedDate');
     table
       .enum('status', ['unassigned', 'open', 'paused', 'closed'])
       .notNullable();
     table.enum('priority', ['low', 'medium', 'high']).notNullable();
-    table.timestamps(true, true, true); // Adds 'createdAt' and 'updatedAt' columns
-    table.timestamp('deletedAt');
+    table.timestamps(true, true); // Adds 'createdAt' and 'updatedAt' columns
+    table.timestamp('deleted_at');
   });
 }
 

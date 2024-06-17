@@ -1,29 +1,18 @@
-// utils/namingConventionMapper.ts
-
-export const snakeToCamelCase = (str: string): string => {
-  return str.replace(/_([a-z])/g, (group) => group.toUpperCase());
-};
-
-export const camelCaseToSnake = (str: string): string => {
-  return str.replace(/([A-Z])/g, (group) => `_${group.toLowerCase()}`);
-};
-
-const transformKeys = (obj: any, transformFn: (key: string) => string) => {
-  if (!obj) return obj; // Safeguard against undefined or null
-  return Object.keys(obj).reduce((acc, key) => {
-    const newKey = transformFn(key);
-    acc[newKey] = obj[key];
-    return acc;
-  }, {});
-};
-
-export const transformObjectKeys = (
-  obj: any,
-  transformFn: (key: string) => string,
-) => {
-  if (!obj) return obj; // Safeguard against undefined or null
+const convertKeysToCamelCase = (obj) => {
   if (Array.isArray(obj)) {
-    return obj.map((item) => transformKeys(item, transformFn));
+    return obj.map((item) => convertKeysToCamelCase(item));
   }
-  return transformKeys(obj, transformFn);
+  if (typeof obj === 'object' && obj !== null) {
+    return Object.keys(obj).reduce((accumulator, key) => {
+      const camelKey = key.replace(/([-_])(\w)/g, (_, match, char) =>
+        char.toUpperCase(),
+      );
+      accumulator[camelKey] = obj[key];
+      return accumulator;
+    }, {});
+  }
+
+  return obj;
 };
+
+export default convertKeysToCamelCase;
