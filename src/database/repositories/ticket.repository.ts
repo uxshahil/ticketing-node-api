@@ -58,7 +58,6 @@ class TicketRepository {
 
       const totalItems = totalItemsQuery.total;
 
-      // Calculate total pages based on the total items and items per page (take)
       const totalPages = Math.ceil(totalItems / take);
 
       const data = await db('tickets')

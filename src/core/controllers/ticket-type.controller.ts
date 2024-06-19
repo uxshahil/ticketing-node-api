@@ -61,7 +61,7 @@ export class TicketTypeController extends ApiBaseController {
   deleteTicketType = async (req: Request, res: Response) => {
     const { id } = req.params;
     const exists = await this.ticketTypeService.findOne(id);
-    const deleted = await this.ticketTypeService.remove(id, false); // Assuming soft delete by default
+    const deleted = await this.ticketTypeService.remove(id, false);
     if (deleted.success && exists) {
       this.ok(res, 'Successfully deleted ticket type');
     } else {

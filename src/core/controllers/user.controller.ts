@@ -98,7 +98,7 @@ export class UserController extends ApiBaseController {
     const { id } = req.params;
 
     const exists = await this.userService.findOne(id);
-    const deleted = await this.userService.remove(id, false); // Assuming soft delete by default
+    const deleted = await this.userService.remove(id, false);
 
     if (!deleted.success || !exists.success) {
       this.error(res, exists.error ?? deleted.error);

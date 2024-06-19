@@ -13,12 +13,12 @@ abstract class ApiBaseController {
   }
 
   protected ok(res: Response, message?: string) {
-    const meta = new MetaResponse(message); // Assuming 200 for OK
+    const meta = new MetaResponse(message);
     res.status(200).json(new DataResponse(meta, []));
   }
 
   protected okWithData<T>(res: Response, data: T, message?: string) {
-    const meta = new MetaResponse(message); // Assuming 200 for OK
+    const meta = new MetaResponse(message);
     res.status(200).json(new DataResponse(meta, data));
   }
 
@@ -35,12 +35,12 @@ abstract class ApiBaseController {
   }
 
   protected created<T>(res: Response, data: T, message?: string) {
-    const meta = new MetaResponse(message); // Assuming 201 for Created
+    const meta = new MetaResponse(message);
     res.status(201).json(new DataResponse(meta, data));
   }
 
   protected noContent(res: Response) {
-    res.status(204).send({ message: 'No Content' }); // Assuming 204 for No Content
+    res.status(204).send({ message: 'No Content' });
   }
 
   protected unauthorized(res: Response) {

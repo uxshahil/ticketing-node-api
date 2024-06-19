@@ -50,6 +50,8 @@ const userController = new UserController();
  *         description: Bad request
  *       500:
  *         description: Server error
+ *     security:
+ *       - BearerAuth: []
  */
 router.post(
   '/users/',

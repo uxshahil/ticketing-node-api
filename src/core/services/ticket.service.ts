@@ -98,8 +98,6 @@ class TicketService {
       return { success: false, error };
     }
   }
-
-  // Additional methods for interacting with ticket types can be added here
 }
 
 export default TicketService;

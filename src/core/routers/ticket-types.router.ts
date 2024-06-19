@@ -42,7 +42,7 @@ const ticketTypeController = new TicketTypeController();
  */
 router.post(
   '/ticket-types',
-  [validation(ticketTypeValidation)], // Assuming you have a validation schema for creating ticket types
+  [validation(ticketTypeValidation)],
   ticketTypeController.createTicketType,
 );
 
@@ -129,7 +129,7 @@ router.get('/ticket-types/:id', ticketTypeController.findTicketTypeById);
  */
 router.put(
   '/ticket-types/:id',
-  [validation(ticketTypeValidation)], // Assuming you have a validation schema for updating ticket types
+  [validation(ticketTypeValidation)],
   ticketTypeController.updateTicketType,
 );
 

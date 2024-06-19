@@ -1,4 +1,3 @@
-// src/services/auth.service.ts
 import config from '@config/config';
 import jwt from 'jsonwebtoken';
 

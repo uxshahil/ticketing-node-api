@@ -16,10 +16,10 @@ interface MigrationConfig {
 }
 
 interface EnvironmentConfig {
-  client: 'postgresql' | 'mysql' | 'sqlite3' | 'oracle' | 'mssql'; // Add other clients as needed
+  client: 'postgresql' | 'mysql' | 'sqlite3' | 'oracle' | 'mssql';
   connection: DbConnection;
   migrations: MigrationConfig;
-  postProcessResponse?: (result: any, queryContext: any) => any; // Adjust the types as needed
+  postProcessResponse?: (result: any, queryContext: any) => any;
 }
 
 interface Config {
@@ -28,7 +28,6 @@ interface Config {
   production?: EnvironmentConfig;
 }
 
-// Define the configuration object
 const dbConfig: Config = {
   local: {
     client: 'postgresql',
@@ -89,5 +88,4 @@ const dbConfig: Config = {
   },
 };
 
-// Export the configuration object
 export default dbConfig;

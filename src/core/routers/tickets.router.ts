@@ -23,7 +23,6 @@ const ticketController = new TicketController();
  *             required:
  *               - description
  *               - number
- *               -
  *               - ticketTypeId
  *             properties:
  *               description:

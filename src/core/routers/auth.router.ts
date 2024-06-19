@@ -42,7 +42,7 @@ const authController = new AuthController();
  *                 token:
  *                   type: string
  *                   description: JWT token for the user.
- *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdXIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyM30.8vZ0Z8Qw
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyM30.8vZ0Z8Qw
  *       400:
  *         description: Bad request
  *       401:

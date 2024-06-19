@@ -5,7 +5,7 @@ import db from '../database';
 class DatabaseService {
   async connect() {
     try {
-      await db.raw('SELECT 1'); // Example operation to verify connection
+      await db.raw('SELECT 1');
       logger.debug('Database connected!');
     } catch (err) {
       logger.error('Error connecting to the database', err);

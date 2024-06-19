@@ -12,7 +12,7 @@ export class TicketController extends ApiBaseController {
 
   constructor() {
     super();
-    this.ticketService = new TicketService(); // Initialize your service
+    this.ticketService = new TicketService();
     logger.debug('TicketController created');
   }
 
@@ -70,15 +70,13 @@ export class TicketController extends ApiBaseController {
   deleteTicket = async (req: Request, res: Response) => {
     const { id } = req.params;
     const exists = await this.ticketService.findOne(id);
-    const deleted = await this.ticketService.remove(id, false); // Assuming soft delete by default
+    const deleted = await this.ticketService.remove(id, false);
     if (deleted.success && exists) {
       this.ok(res, 'Successfully deleted ticket');
     } else {
       this.error(res, 'An error occurred while deleting the ticket');
     }
   };
-
-  // Add more methods as needed based on your requirements
 }
 
 export default TicketController;

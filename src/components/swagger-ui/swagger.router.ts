@@ -62,7 +62,7 @@ if (config.env !== 'production') {
     swaggerUi.setup(specs, {
       swaggerOptions: {
         requestInterceptor: (request) => {
-          request.headers.Authorization = 'Bearer YOUR_TOKEN_HERE'; // Optionally set a default token for testing
+          request.headers.Authorization = 'Bearer YOUR_TOKEN_HERE';
           return request;
         },
       },
