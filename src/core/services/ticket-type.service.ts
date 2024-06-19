@@ -19,7 +19,7 @@ class TicketTypeService {
   }> {
     try {
       const data = await this.ticketTypeRepository.findAll();
-      return { success: false, data };
+      return { success: true, data };
     } catch (error) {
       return { success: false, error };
     }
