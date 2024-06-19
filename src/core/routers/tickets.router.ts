@@ -49,6 +49,8 @@ const ticketController = new TicketController();
  *         description: Bad request
  *       500:
  *         description: Server error
+ *     security:
+ *       - BearerAuth: []
  */
 router.post(
   '/tickets',
@@ -69,6 +71,8 @@ router.post(
  *         description: A list of ticket objects.
  *       500:
  *         description: Server error
+ *     security:
+ *       - BearerAuth: []
  */
 router.get('/tickets', authenticateToken, ticketController.findTickets);
 
@@ -94,6 +98,8 @@ router.get('/tickets', authenticateToken, ticketController.findTickets);
  *         description: Ticket not found
  *       500:
  *         description: Server error
+ *     security:
+ *       - BearerAuth: []
  */
 router.get('/tickets/:id', authenticateToken, ticketController.findTicketById);
 
@@ -144,6 +150,8 @@ router.get('/tickets/:id', authenticateToken, ticketController.findTicketById);
  *         description: Ticket not found
  *       500:
  *         description: Server error
+ *     security:
+ *       - BearerAuth: []
  */
 router.put(
   '/tickets/:id',
@@ -173,6 +181,8 @@ router.put(
  *         description: Ticket not found
  *       500:
  *         description: Server error
+ *     security:
+ *       - BearerAuth: []
  */
 router.delete('/tickets/:id', authenticateToken, ticketController.deleteTicket);
 

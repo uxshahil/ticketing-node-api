@@ -40,6 +40,8 @@ const ticketTypeController = new TicketTypeController();
  *         description: Bad request
  *       500:
  *         description: Server error
+ *     security:
+ *       - BearerAuth: []
  */
 router.post(
   '/ticket-types',
@@ -61,11 +63,7 @@ router.post(
  *       500:
  *         description: Server error
  */
-router.get(
-  '/ticket-types',
-  authenticateToken,
-  ticketTypeController.findTicketTypes,
-);
+router.get('/ticket-types', ticketTypeController.findTicketTypes);
 
 /**
  * @openapi
@@ -90,11 +88,7 @@ router.get(
  *       500:
  *         description: Server error
  */
-router.get(
-  '/ticket-types/:id',
-  authenticateToken,
-  ticketTypeController.findTicketTypeById,
-);
+router.get('/ticket-types/:id', ticketTypeController.findTicketTypeById);
 
 /**
  * @openapi
@@ -135,6 +129,8 @@ router.get(
  *         description: Ticket type not found
  *       500:
  *         description: Server error
+ *     security:
+ *       - BearerAuth: []
  */
 router.put(
   '/ticket-types/:id',
@@ -164,6 +160,8 @@ router.put(
  *         description: Ticket type not found
  *       500:
  *         description: Server error
+ *     security:
+ *       - BearerAuth: []
  */
 router.delete(
   '/ticket-types/:id',
