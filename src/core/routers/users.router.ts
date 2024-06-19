@@ -138,7 +138,7 @@ router.get('/users/:id', [authenticateToken], userController.findUser);
  *     security:
  *       - BearerAuth: []
  */
-router.get('/users/', [], userController.findUsers);
+router.get('/users/', [authenticateToken], userController.findUsers);
 
 /**
  * @openapi

@@ -50,6 +50,6 @@ const authController = new AuthController();
  *       500:
  *         description: Server error
  */
-router.post('/auth/login', [], authController.login);
+router.post('/auth/login', authController.login);
 
 export default router;

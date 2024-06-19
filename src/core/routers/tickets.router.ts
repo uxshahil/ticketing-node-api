@@ -1,4 +1,5 @@
 import { TicketController } from '@core/controllers/ticket.controller';
+import authenticateToken from '@core/middlewares/auth.middleware';
 import validation from '@core/middlewares/validate.middleware';
 import { ticketValidation } from '@core/validators/ticket.validation';
 import { Router } from 'express';
@@ -51,7 +52,7 @@ const ticketController = new TicketController();
  */
 router.post(
   '/tickets',
-  [validation(ticketValidation)],
+  [authenticateToken, validation(ticketValidation)],
   ticketController.createTicket,
 );
 
@@ -69,7 +70,7 @@ router.post(
  *       500:
  *         description: Server error
  */
-router.get('/tickets', ticketController.findTickets);
+router.get('/tickets', authenticateToken, ticketController.findTickets);
 
 /**
  * @openapi
@@ -94,7 +95,7 @@ router.get('/tickets', ticketController.findTickets);
  *       500:
  *         description: Server error
  */
-router.get('/tickets/:id', ticketController.findTicketById);
+router.get('/tickets/:id', authenticateToken, ticketController.findTicketById);
 
 /**
  * @openapi
@@ -146,7 +147,7 @@ router.get('/tickets/:id', ticketController.findTicketById);
  */
 router.put(
   '/tickets/:id',
-  [validation(ticketValidation)],
+  [authenticateToken, validation(ticketValidation)],
   ticketController.updateTicket,
 );
 
@@ -173,6 +174,6 @@ router.put(
  *       500:
  *         description: Server error
  */
-router.delete('/tickets/:id', ticketController.deleteTicket);
+router.delete('/tickets/:id', authenticateToken, ticketController.deleteTicket);
 
 export default router;

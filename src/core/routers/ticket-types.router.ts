@@ -1,4 +1,5 @@
 import { TicketTypeController } from '@core/controllers/ticket-type.controller';
+import authenticateToken from '@core/middlewares/auth.middleware';
 import validation from '@core/middlewares/validate.middleware';
 import ticketTypeValidation from '@core/validators/ticket-type.validation';
 import { Router } from 'express';
@@ -42,7 +43,7 @@ const ticketTypeController = new TicketTypeController();
  */
 router.post(
   '/ticket-types',
-  [validation(ticketTypeValidation)],
+  [authenticateToken, validation(ticketTypeValidation)],
   ticketTypeController.createTicketType,
 );
 
@@ -60,7 +61,11 @@ router.post(
  *       500:
  *         description: Server error
  */
-router.get('/ticket-types', ticketTypeController.findTicketTypes);
+router.get(
+  '/ticket-types',
+  authenticateToken,
+  ticketTypeController.findTicketTypes,
+);
 
 /**
  * @openapi
@@ -85,7 +90,11 @@ router.get('/ticket-types', ticketTypeController.findTicketTypes);
  *       500:
  *         description: Server error
  */
-router.get('/ticket-types/:id', ticketTypeController.findTicketTypeById);
+router.get(
+  '/ticket-types/:id',
+  authenticateToken,
+  ticketTypeController.findTicketTypeById,
+);
 
 /**
  * @openapi
@@ -129,7 +138,7 @@ router.get('/ticket-types/:id', ticketTypeController.findTicketTypeById);
  */
 router.put(
   '/ticket-types/:id',
-  [validation(ticketTypeValidation)],
+  [authenticateToken, validation(ticketTypeValidation)],
   ticketTypeController.updateTicketType,
 );
 
@@ -156,6 +165,10 @@ router.put(
  *       500:
  *         description: Server error
  */
-router.delete('/ticket-types/:id', ticketTypeController.deleteTicketType);
+router.delete(
+  '/ticket-types/:id',
+  authenticateToken,
+  ticketTypeController.deleteTicketType,
+);
 
 export default router;
