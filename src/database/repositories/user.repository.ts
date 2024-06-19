@@ -4,54 +4,57 @@ import {
   IUpdateUserDto,
   IUser,
 } from '@core/interfaces/user.interface';
-import AuthService from '@core/services/auth.service';
 import logger from '@core/utils/logger';
 import db from 'database/database';
 
 class UserRepository {
-  private authService: AuthService;
-
-  constructor() {
-    this.authService = new AuthService();
-  }
-
   async create(createUser: ICreateUserDto): Promise<IUser> {
     try {
-      const id = await db.transaction(async (trx) => {
+      const [data] = await db.transaction(async (trx) => {
+        const [newUser] = await trx('users')
+          .insert({
+            first_name: createUser.firstName,
+            last_name: createUser.lastName,
+            profile_pic: createUser.profilePic,
+            loginId: null,
+          })
+          .returning('*')
+          .transacting(trx);
+
         const [{ id: loginId }] = await trx('logins')
           .insert({
             email: createUser.email,
             password: createUser.password,
           })
-          .returning('id');
+          .returning('id')
+          .transacting(trx);
 
-        const [newUser] = (await trx('users')
-          .insert({
-            first_name: createUser.firstName,
-            last_name: createUser.lastName,
-            profile_pic: createUser.profilePic,
+        const user = await trx('users')
+          .where('id', newUser.id)
+          .update({
             loginId,
           })
-          .returning('*')) as IUser[];
+          .returning('*')
+          .transacting(trx);
 
-        const token = this.authService.generateToken(newUser.id);
-
-        await trx('logins').where('id', loginId).update({ jwt: token });
-
-        return newUser.id;
+        if (!user) {
+          throw new Error('Failed to create user');
+        }
+        return user;
       });
-
-      const user = await this.findOne(id);
-      return user;
+      if (!data) {
+        throw new Error('Failed to create user');
+      }
+      return data;
     } catch (error) {
-      logger.error('Failed to create user:', error);
+      logger.error(error);
       return undefined;
     }
   }
 
   async findOne(id: string): Promise<IUser> {
     try {
-      const users = await db('users as u')
+      const [data] = await db('users as u')
         .select(
           'u.id',
           'u.firstName',
@@ -64,18 +67,20 @@ class UserRepository {
         )
         .leftJoin('logins as l', 'u.loginId', 'l.id')
         .where('u.id', id)
-        .andWhere('u.deletedAt', null)
-        .first();
-      return users;
+        .andWhere('u.deletedAt', null);
+      if (!data) {
+        throw new Error('Failed to read user');
+      }
+      return data;
     } catch (error) {
-      logger.error('Failed to read user:', error);
+      logger.error(error);
       return undefined;
     }
   }
 
   async findAll(): Promise<IUser[]> {
     try {
-      const users = await db('users as u')
+      const [data] = await db('users as u')
         .select(
           'u.id',
           'u.firstName',
@@ -87,11 +92,13 @@ class UserRepository {
           'l.jwt',
         )
         .leftJoin('logins as l', 'u.loginId', 'l.id')
-        .whereNull('u.deletedAt')
-        .first();
-      return users;
+        .whereNull('u.deletedAt');
+      if (!data) {
+        throw new Error('Failed to read users');
+      }
+      return data;
     } catch (error) {
-      logger.error('Failed to read users:', error);
+      logger.error(error);
       return undefined;
     }
   }
@@ -101,15 +108,14 @@ class UserRepository {
     take: number,
   ): Promise<[IUser[], number, number]> {
     try {
-      const totalItemsQuery = await db('users as u')
+      const [totalItemsQuery] = await db('users as u')
         .count('* as total')
         .leftJoin('logins as l', 'u.loginId', 'l.id')
-        .whereNull('u.deletedAt')
-        .first();
+        .whereNull('u.deletedAt');
 
       const totalItems = parseInt(totalItemsQuery.total, 10);
 
-      const res = await db('users as u')
+      const data = await db('users as u')
         .select(
           'u.id',
           'u.firstName',
@@ -128,16 +134,20 @@ class UserRepository {
 
       const totalPages = Math.ceil(totalItems / take);
 
-      return [res, totalItems, totalPages];
+      if (!data || !totalItems || !totalPages) {
+        throw new Error('Failed to read users');
+      }
+
+      return [data, totalItems, totalPages];
     } catch (error) {
-      logger.error('Failed to read users:', error);
+      logger.error(error);
       return undefined;
     }
   }
 
   async update(user: IUpdateUserDto, id: string): Promise<IUser> {
     try {
-      const res = await db.transaction(async (trx) => {
+      const data = await db.transaction(async (trx) => {
         const updatedUser = await trx('users')
           .where('id', id)
           .update({
@@ -149,10 +159,10 @@ class UserRepository {
 
         await trx('logins')
           .where('id', updatedUser[0].loginId)
-          .update({ password: user.password })
+          .update({ password: user.password, jwt: user.jwt })
           .returning('*');
 
-        const users = await trx('users as u')
+        const [users] = await trx('users as u')
           .select(
             'u.id',
             'u.firstName',
@@ -165,47 +175,52 @@ class UserRepository {
           )
           .leftJoin('logins as l', 'u.loginId', 'l.id')
           .where('u.id', id)
-          .andWhere('u.deletedAt', null)
-          .first();
+          .andWhere('u.deletedAt', null);
 
         return users;
       });
 
-      return res;
+      if (!data) {
+        throw new Error('Failed to update user');
+      }
+      return data;
     } catch (error) {
-      logger.error('Failed to update user:', error);
+      logger.error(error);
       return undefined;
     }
   }
 
   async hardDelete(id: string): Promise<boolean> {
     try {
-      await db('users').where('id', id).del();
-      return true;
+      const data = await db('users').where('id', id).del();
+      if (data < 1) {
+        logger.error('Failed to delete user');
+      }
+      return data;
     } catch (error) {
-      logger.error('Failed to delete user:', error);
+      logger.error(error);
       return undefined;
     }
   }
 
   async softDelete(id: string): Promise<boolean> {
     try {
-      const resp = await db('users')
+      const data = await db('users')
         .where('id', id)
         .update({ deletedAt: new Date() });
-      if (resp === 1) {
-        return true;
+      if (data < 1) {
+        logger.error('Failed to delete user');
       }
-      return false;
+      return data;
     } catch (error) {
-      logger.error('Failed to delete user:', error);
+      logger.error(error);
       return undefined;
     }
   }
 
   async findUserByEmail(email: string): Promise<IUser> {
     try {
-      const users = await db('users as u')
+      const [data] = await db('users as u')
         .select(
           'u.id',
           'u.firstName',
@@ -218,11 +233,13 @@ class UserRepository {
         )
         .leftJoin('logins as l', 'u.loginId', 'l.id')
         .where('l.email', email)
-        .andWhere('u.deletedAt', null)
-        .first();
-      return users;
+        .andWhere('u.deletedAt', null);
+      if (!data) {
+        throw new Error('Failed to read user');
+      }
+      return data;
     } catch (error) {
-      logger.error('Failed to read user:', error);
+      logger.error(error);
       return undefined;
     }
   }

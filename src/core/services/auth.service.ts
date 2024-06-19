@@ -2,7 +2,7 @@
 import config from '@config/config';
 import jwt from 'jsonwebtoken';
 
-class AuthService {
+export class AuthService {
   private secretKey: string;
 
   constructor() {
@@ -16,14 +16,18 @@ class AuthService {
   }
 
   verifyToken(token: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      jwt.verify(token, `${this.secretKey}`, (err, user) => {
-        if (err) {
-          return reject(err);
-        }
-        return resolve(user);
+    try {
+      return new Promise((resolve, reject) => {
+        jwt.verify(token, `${this.secretKey}`, (err, user) => {
+          if (err) {
+            return reject(err);
+          }
+          return resolve(user);
+        });
       });
-    });
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 }
 

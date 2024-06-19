@@ -1,0 +1,747 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Ticketing Api",
+    "description": "Node.JS Express Ticketing Solution",
+    "contact": {
+      "nane": "Shahil Sukuram",
+      "email": "shahil@themidastouch.co.za"
+    },
+    "version": "0.0.1"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Development server"
+    }
+  ],
+  "externalDocs": {},
+  "tags": [
+    {
+      "name": "auth",
+      "description": "Authentication and authorization operations"
+    },
+    {
+      "name": "ticket-types",
+      "description": "Operations for managing ticket types"
+    },
+    {
+      "name": "tickets",
+      "description": "Operations for managing tickets"
+    },
+    {
+      "name": "users",
+      "description": "Operations for managing users"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "paths": {
+    "/api/login": {
+      "post": {
+        "summary": "User login",
+        "description": "Authenticate a user and return a JWT token.",
+        "tags": [
+          "auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "The user's email.",
+                    "example": "user@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "The user's password.",
+                    "example": "password123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "description": "JWT token for the user.",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdXIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyM30.8vZ0Z8Qw"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/ticket-types": {
+      "post": {
+        "summary": "Create a new ticket type",
+        "description": "Creates a new ticket type in the system.",
+        "tags": [
+          "ticket-types"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "title",
+                  "description"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Title of the ticket type.",
+                    "example": "Bug Report"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Description of the ticket type.",
+                    "example": "A bug report ticket for software issues."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ticket type created successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "get": {
+        "summary": "Retrieve all ticket types",
+        "description": "Returns a list of ticket types.",
+        "tags": [
+          "ticket-types"
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of ticket type objects."
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/ticket-types/{id}": {
+      "get": {
+        "summary": "Find a ticket type by ID",
+        "description": "Returns a single ticket type by ID.",
+        "tags": [
+          "ticket-types"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the ticket type to retrieve."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A single ticket type object."
+          },
+          "404": {
+            "description": "Ticket type not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a ticket type by ID",
+        "description": "Updates a ticket type in the system.",
+        "tags": [
+          "ticket-types"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the ticket type to update."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Updated title of the ticket type.",
+                    "example": "Feature Request"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Updated description of the ticket type.",
+                    "example": "A request for new features."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ticket type updated successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Ticket type not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a ticket type by ID",
+        "description": "Deletes a single ticket type by ID.",
+        "tags": [
+          "ticket-types"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the ticket type to delete."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Ticket type deleted successfully"
+          },
+          "404": {
+            "description": "Ticket type not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/tickets": {
+      "post": {
+        "summary": "Create a new ticket",
+        "description": "Creates a new ticket in the system.",
+        "tags": [
+          "tickets"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "description",
+                  "number",
+                  null,
+                  "ticketTypeId"
+                ],
+                "properties": {
+                  "description": {
+                    "type": "string",
+                    "description": "Detailed description of the ticket.",
+                    "example": "Something is broken"
+                  },
+                  "number": {
+                    "type": "integer",
+                    "description": "Unique identifier for the ticket.",
+                    "example": 123
+                  },
+                  "": {
+                    "type": "string",
+                    "description": "UUID of the user who created the ticket.",
+                    "example": "123e4567-e89b-12d3-a456-4266-9c88-29676616ae26e"
+                  },
+                  "ticketTypeId": {
+                    "type": "string",
+                    "description": "UUID of the ticket type.",
+                    "example": "abcdef12-3456-abcd-7890-efgh-ijklmnopqrstuvwxy"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ticket created successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "get": {
+        "summary": "Retrieve all tickets",
+        "description": "Returns a list of tickets.",
+        "tags": [
+          "tickets"
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of ticket objects."
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/tickets/{id}": {
+      "get": {
+        "summary": "Find a ticket by ID",
+        "description": "Returns a single ticket by ID.",
+        "tags": [
+          "tickets"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the ticket to retrieve."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A single ticket object."
+          },
+          "404": {
+            "description": "Ticket not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a ticket by ID",
+        "description": "Updates a ticket in the system.",
+        "tags": [
+          "tickets"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the ticket to update."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "description": {
+                    "type": "string",
+                    "description": "Detailed description of the ticket.",
+                    "example": "Something is broken"
+                  },
+                  "number": {
+                    "type": "integer",
+                    "description": "Unique identifier for the ticket.",
+                    "example": 123
+                  },
+                  "": {
+                    "type": "string",
+                    "description": "UUID of the user who created the ticket.",
+                    "example": "123e4567-e89b-12d3-a456-4266-9c88-29676616ae26e"
+                  },
+                  "ticketTypeId": {
+                    "type": "string",
+                    "description": "UUID of the ticket type.",
+                    "example": "abcdef12-3456-abcd-7890-efgh-ijklmnopqrstuvwxy"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ticket updated successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Ticket not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a ticket by ID",
+        "description": "Deletes a single ticket by ID.",
+        "tags": [
+          "tickets"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the ticket to delete."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Ticket deleted successfully"
+          },
+          "404": {
+            "description": "Ticket not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/user": {
+      "post": {
+        "summary": "Create a new user",
+        "description": "Creates a new user in the system.",
+        "tags": [
+          "users"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "The user's email.",
+                    "example": "user@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "The user's password.",
+                    "example": "password123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The ID of the newly created user.",
+                      "example": "123e4567-e89b-12d3-a456-4266-9c88-29676616ae26e"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "get": {
+        "summary": "Retrieve all users",
+        "description": "Returns a list of users.",
+        "tags": [
+          "users"
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of user objects.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "The ID of the user.",
+                        "example": "123e4567-e89b-12d3-a456-4266-9c88-29676616ae26e"
+                      },
+                      "email": {
+                        "type": "string",
+                        "description": "The user's email.",
+                        "example": "user@example.com"
+                      },
+                      "password": {
+                        "type": "string",
+                        "description": "The user's password.",
+                        "example": "password123"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/user/{id}": {
+      "get": {
+        "summary": "Find a user by ID",
+        "description": "Returns a single user by ID.",
+        "tags": [
+          "users"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the user to retrieve."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A single user object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The ID of the user.",
+                      "example": "123e4567-e89b-12d3-a456-4266-9c88-29676616ae26e"
+                    },
+                    "email": {
+                      "type": "string",
+                      "description": "The user's email.",
+                      "example": "user@example.com"
+                    },
+                    "password": {
+                      "type": "string",
+                      "description": "The user's password.",
+                      "example": "password123"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "Update a user by ID",
+        "description": "Updates a user in the system.",
+        "tags": [
+          "users"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the user to update."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "The user's email.",
+                    "example": "user@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "The user's password.",
+                    "example": "newPassword123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete a user by ID",
+        "description": "Deletes a single user by ID.",
+        "tags": [
+          "users"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the user to delete."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "User deleted successfully"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    }
+  }
+}

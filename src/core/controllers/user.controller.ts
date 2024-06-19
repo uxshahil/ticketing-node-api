@@ -1,12 +1,10 @@
 import ApiBaseController from '@core/common/api-base.controller';
-import { ILoginDto } from '@core/interfaces/login.interface';
 import {
   ICreateUserDto,
   IUpdateUserDto,
 } from '@core/interfaces/user.interface';
 import AuthService from '@core/services/auth.service';
 import UserService from '@core/services/user.service';
-import logger from '@core/utils/logger';
 import { Request, Response } from 'express';
 
 export class UserController extends ApiBaseController {
@@ -16,33 +14,53 @@ export class UserController extends ApiBaseController {
 
   constructor() {
     super();
+
     this.userService = new UserService();
     this.authService = new AuthService();
-    logger.debug('UserController created');
   }
 
   createUser = async (req: Request, res: Response) => {
     const createUserDto: ICreateUserDto = req.body;
-    const user = await this.userService.create(createUserDto);
-    if (!user.success) {
-      this.error(res, 'An error occurred');
+
+    const {
+      success: userCreated,
+      data: user,
+      error,
+    } = await this.userService.create(createUserDto);
+
+    if (!userCreated) {
+      this.error(res, error);
     }
-    this.okWithData(res, user, 'User data created successfully');
+
+    const token = this.authService.generateToken(user.id);
+
+    const { success, data } = await this.userService.update(
+      { ...user, jwt: token },
+      user.id,
+    );
+
+    if (!success) {
+      this.error(res, error);
+    }
+
+    this.created(res, data, 'User created successfully');
   };
 
   findUser = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const user = await this.userService.findOne(id);
-    if (!user.success) {
-      this.error(res, 'An error occurred while fetching user');
+    const { success, data, error } = await this.userService.findOne(id);
+
+    if (!success) {
+      this.error(res, error);
+    } else {
+      this.okWithData(res, data, 'Successfully fetched user');
     }
-    this.okWithData(res, user.data, 'Successfully fetched user data');
   };
 
   findUsers = async (req: Request, res: Response) => {
-    // Ensure page and pageSize are strings before parsing
     const page =
       typeof req.query.page === 'string' ? parseInt(req.query.page, 10) : 1;
+
     const pageSize =
       typeof req.query.pageSize === 'string'
         ? parseInt(req.query.pageSize, 10)
@@ -52,46 +70,40 @@ export class UserController extends ApiBaseController {
       page,
       pageSize,
     );
-    if (success) {
-      this.okWithPagination(res, data, 'Successfully fetched all user data');
-    } else {
+
+    if (!success) {
       this.error(res, error);
+    } else {
+      this.okWithPagination(res, data, 'Successfully fetched all user data');
     }
   };
 
   updateUser = async (req: Request, res: Response) => {
     const { id } = req.params;
     const updateUserDto: IUpdateUserDto = req.body;
-    const updatedUser = await this.userService.update(updateUserDto, id);
-    if (!updatedUser.success) {
-      this.error(res, 'An error occurred while updating user');
+
+    const { success, data, error } = await this.userService.update(
+      updateUserDto,
+      id,
+    );
+
+    if (!success) {
+      this.error(res, error);
+    } else {
+      this.okWithData(res, data, 'Successfully updated user');
     }
-    this.okWithData(res, updatedUser.data, `Successfully updated user`);
   };
 
   deleteUser = async (req: Request, res: Response) => {
     const { id } = req.params;
+
     const exists = await this.userService.findOne(id);
     const deleted = await this.userService.remove(id, false); // Assuming soft delete by default
-    if (deleted.success && exists) {
-      this.ok(res, 'Successfully deleted user');
-    } else {
-      this.error(res, 'An error occurred while deleting user');
-    }
-  };
 
-  login = async (req: Request, res: Response) => {
-    const loginDto: ILoginDto = req.body;
-    const user = await this.userService.findUserByEmail(loginDto.email);
-    if (loginDto.password === user.data.password) {
-      const token = this.authService.generateToken(user.data.id);
-      const updatedLogin = await this.userService.update(
-        { jwt: token },
-        user.data.id,
-      );
-      this.okWithData(res, updatedLogin.data, `User login successful`);
+    if (!deleted.success || !exists.success) {
+      this.error(res, exists.error ?? deleted.error);
     } else {
-      this.error(res, 'User login failed');
+      this.ok(res, 'Successfully deleted user');
     }
   };
 }

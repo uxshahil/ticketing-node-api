@@ -10,30 +10,39 @@ import db from 'database/database';
 class TicketRepository {
   async create(ticket: ICreateTicketDto): Promise<ITicket> {
     try {
-      const [newTicket] = await db('tickets').insert(ticket).returning('*');
-      return newTicket;
+      const [data] = await db('tickets').insert(ticket).returning('*');
+      if (!data) {
+        throw new Error('Failed to read user');
+      }
+      return data;
     } catch (error) {
-      logger.error('Failed to create ticket:', error);
+      logger.error(error);
       return undefined;
     }
   }
 
   async findOne(id: string): Promise<ITicket> {
     try {
-      const ticket = await db('tickets').where('id', id).first();
-      return ticket;
+      const [data] = await db('tickets').where('id', id);
+      if (!data) {
+        throw new Error('Failed to read ticket');
+      }
+      return data;
     } catch (error) {
-      logger.error('Failed to read ticket:', error);
+      logger.error(error);
       return undefined;
     }
   }
 
   async findAll(): Promise<ITicket[]> {
     try {
-      const tickets = await db('tickets');
-      return tickets;
+      const data = await db('tickets');
+      if (!data) {
+        throw new Error('Failed to read tickets');
+      }
+      return data;
     } catch (error) {
-      logger.error('Failed to read tickets:', error);
+      logger.error(error);
       return undefined;
     }
   }
@@ -43,63 +52,71 @@ class TicketRepository {
     take: number,
   ): Promise<[ITicket[], number, number]> {
     try {
-      const totalItemsQuery = await db('tickets')
+      const [totalItemsQuery] = await db('tickets')
         .count('* as total')
-        .whereNull('deletedAt')
-        .first();
+        .whereNull('deletedAt');
 
       const totalItems = totalItemsQuery.total;
 
       // Calculate total pages based on the total items and items per page (take)
       const totalPages = Math.ceil(totalItems / take);
 
-      const res = await db('tickets')
+      const data = await db('tickets')
         .orderBy('createdAt')
         .limit(take)
         .offset(skip);
 
-      return [res, totalItems, totalPages];
+      if (!data || !totalItems || !totalPages) {
+        throw new Error('Failed to read tickets');
+      }
+
+      return [data, totalItems, totalPages];
     } catch (error) {
-      logger.error('Failed to read users:', error);
+      logger.error(error);
       return undefined;
     }
   }
 
   async update(ticket: IUpdateTicketDto, id: string): Promise<ITicket> {
     try {
-      const updatedTicket = await db('tickets')
+      const [data] = await db('tickets')
         .where('id', id)
         .update(ticket)
-        .returning('*')
-        .first();
-      return updatedTicket;
+        .returning('*');
+      if (!data) {
+        throw new Error('Failed to update ticket');
+      }
+      return data;
     } catch (error) {
-      logger.error('Failed to update ticket:', error);
+      logger.error(error);
       return undefined;
     }
   }
 
   async hardDelete(id: string): Promise<boolean> {
     try {
-      const result = await db('tickets').where('id', id).delete();
-      return result > 0;
+      const data = await db('tickets').where('id', id).delete();
+      if (data < 1) {
+        throw new Error('Failed to delete ticket');
+      }
+      return data;
     } catch (error) {
-      logger.error('Failed to delete ticket:', error);
+      logger.error(error);
       return undefined;
     }
   }
 
   async softDelete(id: string): Promise<boolean> {
     try {
-      const resp = await db('tickets')
+      const data = await db('tickets')
         .where('id', id)
         .update({ deletedAt: new Date() });
-      if (resp === 1) {
-        return true;
+      if (data < 1) {
+        throw new Error('Failed to delete ticket');
       }
-      return false;
+      return data;
     } catch (error) {
-      logger.error('Failed to delete ticket:', error);
+      logger.error(error);
       return undefined;
     }
   }

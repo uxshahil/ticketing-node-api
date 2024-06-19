@@ -17,61 +17,62 @@ class TicketTypeService {
     data?: ITicketType[];
     error?: string;
   }> {
-    const ticketTypes = await this.ticketTypeRepository.findAll();
-    if (Array.isArray(ticketTypes)) {
-      return { success: true, data: ticketTypes };
+    try {
+      const data = await this.ticketTypeRepository.findAll();
+      return { success: false, data };
+    } catch (error) {
+      return { success: false, error };
     }
-    return { success: false, error: ticketTypes };
   }
 
   async findOne(
     id: string,
   ): Promise<{ success: boolean; data?: ITicketType; error?: string }> {
-    const ticketType = await this.ticketTypeRepository.findOne(id);
-    if (ticketType) {
-      return { success: true, data: ticketType };
+    try {
+      const data = await this.ticketTypeRepository.findOne(id);
+      return { success: true, data };
+    } catch (error) {
+      return { success: false, error };
     }
-    return { success: false, error: 'Ticket type not found' };
   }
 
   async create(
     ticketType: ICreateTicketTypeDto,
   ): Promise<{ success: boolean; data?: ITicketType; error?: string }> {
-    const newTicketType = await this.ticketTypeRepository.create(ticketType);
-    if (newTicketType) {
-      return { success: true, data: newTicketType };
+    try {
+      const data = await this.ticketTypeRepository.create(ticketType);
+      return { success: true, data };
+    } catch (error) {
+      return { success: false, error };
     }
-    return { success: false, error: 'Failed to create ticket type' };
   }
 
   async update(
     ticketType: IUpdateTicketTypeDto,
     id: string,
   ): Promise<{ success: boolean; data?: ITicketType; error?: string }> {
-    const updatedTicketType = await this.ticketTypeRepository.update(
-      ticketType,
-      id,
-    );
-    if (updatedTicketType) {
-      return { success: true, data: updatedTicketType };
+    try {
+      const data = await this.ticketTypeRepository.update(ticketType, id);
+      return { success: true, data };
+    } catch (error) {
+      return { success: false };
     }
-    return { success: false, error: 'Failed to update ticket type' };
   }
 
-  async delete(id: string): Promise<{ success: boolean; error?: string }> {
-    const success = await this.ticketTypeRepository.softDelete(id);
-    if (success) {
+  async remove(
+    id: string,
+    hardDelete: boolean,
+  ): Promise<{ success: boolean; error?: string }> {
+    try {
+      if (!hardDelete) {
+        await this.ticketTypeRepository.softDelete(id);
+      } else {
+        await this.ticketTypeRepository.hardDelete(id);
+      }
       return { success: true };
+    } catch (error) {
+      return { success: false, error };
     }
-    return { success: false, error: 'Failed to delete ticket type' };
-  }
-
-  async hardDelete(id: string): Promise<{ success: boolean; error?: string }> {
-    const success = await this.ticketTypeRepository.hardDelete(id);
-    if (success) {
-      return { success: true };
-    }
-    return { success: false, error: 'Failed to hard delete ticket type' };
   }
 }
 

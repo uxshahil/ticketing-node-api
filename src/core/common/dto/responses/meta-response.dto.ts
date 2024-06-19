@@ -1,9 +1,7 @@
-export class MetaResponse {
-  statusCode: number;
+export default class MetaResponse {
   message?: string | object;
 
-  constructor(statusCode: number, message?: string) {
-    this.statusCode = statusCode;
+  constructor(message?: string) {
     this.message = message;
   }
 }

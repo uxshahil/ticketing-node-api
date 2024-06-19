@@ -1,5 +1,5 @@
-import convertKeysToCamelCase from 'database/utils/naming-convention-mapper';
 import { knexSnakeCaseMappers } from 'objection';
+import convertKeysToCamelCase from '../utils/naming-convention-mapper';
 
 interface DbConnection {
   host: string;

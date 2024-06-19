@@ -21,30 +21,28 @@ export class TicketTypeController extends ApiBaseController {
     const { success, data, error } = await this.ticketTypeService.create(
       ticketTypeData,
     );
-    if (success) {
-      this.okWithData(res, data, 'Ticket type created successfully');
-    } else {
+    if (!success) {
       this.error(res, error);
     }
+    this.created(res, data, 'Ticket type created successfully');
   };
 
   findTicketTypes = async (req: Request, res: Response) => {
     const { success, data, error } = await this.ticketTypeService.findAll();
-    if (success) {
-      this.okWithData(res, data, 'Successfully fetched all ticket types');
-    } else {
+    if (!success) {
       this.error(res, error);
+    } else {
+      this.okWithData(res, data, 'Successfully fetched all ticket types data');
     }
   };
 
   findTicketTypeById = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { success, data, error } = await this.ticketTypeService.findOne(id);
-    if (success) {
-      this.okWithData(res, data, 'Successfully fetched ticket type');
-    } else {
+    if (!success) {
       this.error(res, error);
     }
+    this.okWithData(res, data, 'Successfully fetched ticket type data');
   };
 
   updateTicketType = async (req: Request, res: Response) => {
@@ -54,30 +52,20 @@ export class TicketTypeController extends ApiBaseController {
       ticketTypeData,
       id,
     );
-    if (success) {
-      this.okWithData(res, data, 'Ticket type updated successfully');
-    } else {
+    if (!success) {
       this.error(res, error);
     }
+    this.okWithData(res, data, `Successfully updated ticket type ${id}`);
   };
 
   deleteTicketType = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { success, error } = await this.ticketTypeService.delete(id);
-    if (success) {
-      this.ok(res, 'Ticket type deleted successfully');
+    const exists = await this.ticketTypeService.findOne(id);
+    const deleted = await this.ticketTypeService.remove(id, false); // Assuming soft delete by default
+    if (deleted.success && exists) {
+      this.ok(res, 'Successfully deleted ticket type');
     } else {
-      this.error(res, error);
-    }
-  };
-
-  hardDeleteTicketType = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const { success, error } = await this.ticketTypeService.hardDelete(id);
-    if (success) {
-      this.ok(res, 'Ticket type hard deleted successfully');
-    } else {
-      this.error(res, error);
+      this.error(res, 'An error occurred while deleting the ticket');
     }
   };
 }

@@ -10,12 +10,12 @@ const userController = new UserController();
 
 /**
  * @openapi
- * /user:
+ * /api/user:
  *   post:
  *     summary: Create a new user
  *     description: Creates a new user in the system.
  *     tags:
- *       - Users
+ *       - users
  *     requestBody:
  *       required: true
  *       content:
@@ -51,16 +51,20 @@ const userController = new UserController();
  *       500:
  *         description: Server error
  */
-router.post('/user/', [validation(userValidation)], userController.createUser);
+router.post(
+  '/users/',
+  [authenticateToken, validation(userValidation)],
+  userController.createUser,
+);
 
 /**
  * @openapi
- * /user/{id}:
+ * /api/user/{id}:
  *   get:
  *     summary: Find a user by ID
  *     description: Returns a single user by ID.
  *     tags:
- *       - Users
+ *       - users
  *     parameters:
  *       - in: path
  *         name: id
@@ -95,16 +99,16 @@ router.post('/user/', [validation(userValidation)], userController.createUser);
  *     security:
  *       - BearerAuth: []
  */
-router.get('/user/:id', [authenticateToken], userController.findUser);
+router.get('/users/:id', [authenticateToken], userController.findUser);
 
 /**
  * @openapi
- * /user:
+ * /api/user:
  *   get:
  *     summary: Retrieve all users
  *     description: Returns a list of users.
  *     tags:
- *       - Users
+ *       - users
  *     responses:
  *       200:
  *         description: A list of user objects.
@@ -132,16 +136,16 @@ router.get('/user/:id', [authenticateToken], userController.findUser);
  *     security:
  *       - BearerAuth: []
  */
-router.get('/user/', [], userController.findUsers);
+router.get('/users/', [], userController.findUsers);
 
 /**
  * @openapi
- * /user/{id}:
+ * /api/user/{id}:
  *   put:
  *     summary: Update a user by ID
  *     description: Updates a user in the system.
  *     tags:
- *       - Users
+ *       - users
  *     parameters:
  *       - in: path
  *         name: id
@@ -180,19 +184,19 @@ router.get('/user/', [], userController.findUsers);
  *       - BearerAuth: []
  */
 router.put(
-  '/user/:id',
+  '/users/:id',
   [authenticateToken, validation(userValidation)],
   userController.updateUser,
 );
 
 /**
  * @openapi
- * /user/{id}:
+ * /api/user/{id}:
  *   delete:
  *     summary: Delete a user by ID
  *     description: Deletes a single user by ID.
  *     tags:
- *       - Users
+ *       - users
  *     parameters:
  *       - in: path
  *         name: id
@@ -210,6 +214,6 @@ router.put(
  *     security:
  *       - BearerAuth: []
  */
-router.delete('/user/:id', [authenticateToken], userController.deleteUser);
+router.delete('/users/:id', [authenticateToken], userController.deleteUser);
 
 export default router;

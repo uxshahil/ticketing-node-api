@@ -1,27 +1,24 @@
 /* eslint-disable class-methods-use-this */
-import { DataResponse } from '@core/common/dto/responses/data-response.dto';
-import { MetaResponse } from '@core/common/dto/responses/meta-response.dto';
+import DataResponse from '@core/common/dto/responses/data-response.dto';
+import MetaResponse from '@core/common/dto/responses/meta-response.dto';
 import { PagedList } from '@core/common/dto/responses/paged-list.dto';
-import { PaginatedDataResponse } from '@core/common/dto/responses/paginated-data-response.dto';
-import { PaginationMetaResponse } from '@core/common/dto/responses/pagination-meta-response.dto';
+import PaginatedDataResponse from '@core/common/dto/responses/paginated-data-response.dto';
+import PaginationMetaResponse from '@core/common/dto/responses/pagination-meta-response.dto';
 import { Response } from 'express';
 
 abstract class ApiBaseController {
   protected error(res: Response, message?: string) {
-    const meta = new MetaResponse(
-      500, // Assuming 500 for internal server error
-      message || 'An error occurred',
-    );
+    const meta = new MetaResponse(message || 'An error occurred');
     res.status(500).json(new DataResponse(meta, null));
   }
 
   protected ok(res: Response, message?: string) {
-    const meta = new MetaResponse(200, message); // Assuming 200 for OK
+    const meta = new MetaResponse(message); // Assuming 200 for OK
     res.status(200).json(new DataResponse(meta, []));
   }
 
   protected okWithData<T>(res: Response, data: T, message?: string) {
-    const meta = new MetaResponse(200, message); // Assuming 200 for OK
+    const meta = new MetaResponse(message); // Assuming 200 for OK
     res.status(200).json(new DataResponse(meta, data));
   }
 
@@ -31,7 +28,6 @@ abstract class ApiBaseController {
     message?: string,
   ) {
     const meta = new PaginationMetaResponse(
-      200, // Assuming 200 for OK
       message,
       paginatedData.paginationMetadata,
     );
@@ -39,12 +35,20 @@ abstract class ApiBaseController {
   }
 
   protected created<T>(res: Response, data: T, message?: string) {
-    const meta = new MetaResponse(201, message); // Assuming 201 for Created
+    const meta = new MetaResponse(message); // Assuming 201 for Created
     res.status(201).json(new DataResponse(meta, data));
   }
 
   protected noContent(res: Response) {
     res.status(204).send({ message: 'No Content' }); // Assuming 204 for No Content
+  }
+
+  protected unauthorized(res: Response) {
+    res.status(401).send({ message: 'Unauthorized' });
+  }
+
+  protected notFound(res: Response, message?: string) {
+    res.status(404).send({ message: `${message} not found` });
   }
 }
 

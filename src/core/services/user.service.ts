@@ -5,7 +5,6 @@ import {
   IUpdateUserDto,
   IUser,
 } from '@core/interfaces/user.interface';
-import logger from '@core/utils/logger';
 import UserRepository from 'database/repositories/user.repository';
 
 class UserService {
@@ -23,19 +22,21 @@ class UserService {
       const offset = (page - 1) * pageSize;
       const [users, totalItems, totalPages] =
         await this.userRepository.findAndCountAll(offset, pageSize);
-      const pagedList: PagedList<IUser> = {
+      const data: PagedList<IUser> = {
         items: users,
         paginationMetadata: {
-          statusCode: 200,
           currentPage: page,
           pageSize,
           totalItems,
           totalPages,
         },
       };
-      return { success: true, data: pagedList };
+      if (!data) {
+        throw new Error('Db Error');
+      }
+      return { success: true, data };
     } catch (error) {
-      return { success: false, error: error.message };
+      return { success: false, error };
     }
   }
 
@@ -44,43 +45,42 @@ class UserService {
     data?: IUser[];
     error?: string;
   }> {
-    const resp = await this.userRepository.findAll();
-    if (typeof resp !== 'string') {
-      return { success: true, data: resp };
+    try {
+      const data = await this.userRepository.findAll();
+      if (!data) {
+        throw new Error('Db Error');
+      }
+      return { success: false, data };
+    } catch (error) {
+      return { success: false, error };
     }
-    return { success: false };
-  }
-
-  catch(error) {
-    return { success: false, error: error.message };
   }
 
   async findOne(
     id: string,
   ): Promise<{ success: boolean; data?: IUser; error?: string }> {
     try {
-      const resp = await this.userRepository.findOne(id);
-      if (typeof resp !== 'string') {
-        return { success: true, data: resp };
+      const data = await this.userRepository.findOne(id);
+      if (!data) {
+        throw new Error('Db Error');
       }
-      return { success: false, error: resp };
+      return { success: true, data };
     } catch (error) {
-      return { success: false, error: error.message };
+      return { success: false, error };
     }
   }
 
   async create(
     user: ICreateUserDto,
   ): Promise<{ success: boolean; data?: IUser; error?: string }> {
-    // Implement your logic to create a new user in the database
     try {
-      const resp = await this.userRepository.create(user);
-      if (typeof resp !== 'string') {
-        return { success: true, data: resp };
+      const data = await this.userRepository.create(user);
+      if (!data) {
+        throw new Error('Db Error');
       }
-      return { success: false, error: resp };
+      return { success: true, data };
     } catch (error) {
-      return { success: false, error: 'Failed to create user' };
+      return { success: false, error };
     }
   }
 
@@ -89,48 +89,43 @@ class UserService {
     id: string,
   ): Promise<{ success: boolean; data?: IUser; error?: string }> {
     try {
-      const resp = await this.userRepository.update(user, id);
-      if (typeof resp !== 'string') {
-        return { success: true, data: resp };
+      const data = await this.userRepository.update(user, id);
+      if (!data) {
+        throw new Error('Db Error');
       }
-      return { success: false };
+      return { success: true, data };
     } catch (error) {
-      return { success: false };
+      return { success: false, error };
     }
   }
 
-  async remove(id: string, hardDelete: boolean) {
+  async remove(
+    id: string,
+    hardDelete: boolean,
+  ): Promise<{ success: boolean; error?: string }> {
     try {
-      let resp;
-
       if (!hardDelete) {
-        resp = await this.userRepository.softDelete(id);
+        await this.userRepository.softDelete(id);
       } else {
-        resp = await this.userRepository.hardDelete(id);
+        await this.userRepository.hardDelete(id);
       }
-
-      if (typeof resp !== 'string') {
-        return { success: true };
-      }
-
-      return { success: false };
+      return { success: true };
     } catch (error) {
-      logger.error('Failed to delete user:', error);
-      return { success: false };
+      return { success: false, error };
     }
   }
 
   async findUserByEmail(
     id: string,
-  ): Promise<{ success: boolean; data?: IUser; error?: string }> {
+  ): Promise<{ success: boolean; data?: IUser }> {
     try {
-      const resp = await this.userRepository.findUserByEmail(id);
-      if (typeof resp !== 'string') {
-        return { success: true, data: resp };
+      const data = await this.userRepository.findUserByEmail(id);
+      if (!data) {
+        throw new Error('Db Error');
       }
-      return { success: false, error: resp };
+      return { success: true, data };
     } catch (error) {
-      return { success: false, error: error.message };
+      return { success: false };
     }
   }
 }

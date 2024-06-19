@@ -19,6 +19,7 @@ const authenticateToken = async (
     if (!user) {
       res.sendStatus(403);
     }
+    // validateUserId
     return next();
   } catch (err) {
     return res.sendStatus(403);

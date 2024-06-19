@@ -10,33 +10,39 @@ import db from 'database/database';
 class TicketTypeRepository {
   async create(ticketType: ICreateTicketTypeDto): Promise<ITicketType> {
     try {
-      const [newTicketType] = await db('ticketTypes')
-        .insert(ticketType)
-        .returning('*')
-        .first();
-      return newTicketType;
+      const [data] = await db('ticketTypes').insert(ticketType).returning('*');
+      if (data < 1) {
+        throw new Error('Failed to create ticket type');
+      }
+      return data;
     } catch (error) {
-      logger.error('Failed to create ticket type:', error);
+      logger.error(error);
       return undefined;
     }
   }
 
   async findOne(id: string): Promise<ITicketType> {
     try {
-      const ticketType = await db('ticketTypes').where('id', id).first();
-      return ticketType;
+      const [data] = await db('ticketTypes').where('id', id);
+      if (data < 1) {
+        throw new Error('Failed to update ticket type');
+      }
+      return data;
     } catch (error) {
-      logger.error('Failed to read ticket type:', error);
+      logger.error(error);
       return undefined;
     }
   }
 
   async findAll(): Promise<ITicketType[]> {
     try {
-      const ticketTypes = await db('ticketTypes');
-      return ticketTypes;
+      const data = await db('ticketTypes');
+      if (data < 1) {
+        throw new Error('Failed to find ticket type');
+      }
+      return data;
     } catch (error) {
-      logger.error('Failed to read ticket types:', error);
+      logger.error(error);
       return undefined;
     }
   }
@@ -46,39 +52,44 @@ class TicketTypeRepository {
     id: string,
   ): Promise<ITicketType> {
     try {
-      const updatedTicketType = await db('ticketTypes')
+      const [data] = await db('ticketTypes')
         .where('id', id)
         .update(ticketType)
-        .returning('*')
-        .first();
-      return updatedTicketType;
+        .returning('*');
+      if (!data) {
+        throw new Error('Failed to update ticket type');
+      }
+      return data;
     } catch (error) {
-      logger.error('Failed to update ticket type:', error);
+      logger.error(error);
       return undefined;
     }
   }
 
   async hardDelete(id: string): Promise<boolean> {
     try {
-      const result = await db('ticketTypes').where('id', id).delete();
-      return result > 0;
+      const data = await db('ticketTypes').where('id', id).delete();
+      if (data < 1) {
+        throw new Error('Failed to delete ticket type');
+      }
+      return data;
     } catch (error) {
-      logger.error('Failed to delete ticket type:', error);
+      logger.error(error);
       return undefined;
     }
   }
 
   async softDelete(id: string): Promise<boolean> {
     try {
-      const resp = await db('ticketTypes')
+      const data = await db('ticketTypes')
         .where('id', id)
         .update({ deletedAt: new Date() });
-      if (resp === 1) {
-        return true;
+      if (data < 1) {
+        throw new Error('Failed to delete ticket type');
       }
-      return false;
+      return data;
     } catch (error) {
-      logger.error('Failed to delete ticket type:', error);
+      logger.error(error);
       return undefined;
     }
   }

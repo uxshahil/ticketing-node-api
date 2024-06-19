@@ -7,12 +7,12 @@ const authController = new AuthController();
 
 /**
  * @openapi
- * /login:
+ * /api/login:
  *   post:
  *     summary: User login
  *     description: Authenticate a user and return a JWT token.
  *     tags:
- *       - Authentication
+ *       - auth
  *     requestBody:
  *       required: true
  *       content:
@@ -50,6 +50,6 @@ const authController = new AuthController();
  *       500:
  *         description: Server error
  */
-router.get('auth/login/:id', [], authController.login);
+router.post('/auth/login', [], authController.login);
 
 export default router;

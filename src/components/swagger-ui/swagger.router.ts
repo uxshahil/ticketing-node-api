@@ -2,8 +2,16 @@ import config from '@config/config';
 import consts from '@config/consts';
 import swaggerForbidden from '@core/middlewares/swagger.middleware';
 import { Router } from 'express';
+import fs from 'fs';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi, { SwaggerOptions } from 'swagger-ui-express';
+
+const tags = [
+  { name: 'auth', description: 'Authentication and authorization operations' },
+  { name: 'ticket-types', description: 'Operations for managing ticket types' },
+  { name: 'tickets', description: 'Operations for managing tickets' },
+  { name: 'users', description: 'Operations for managing users' },
+];
 
 const options: SwaggerOptions = {
   definition: {
@@ -11,10 +19,19 @@ const options: SwaggerOptions = {
     info: {
       title: 'Ticketing Api',
       description: 'Node.JS Express Ticketing Solution',
-      contact: { nane: 'Shahil Sukuram' },
+      contact: {
+        nane: 'Shahil Sukuram',
+        email: 'shahil@themidastouch.co.za',
+      },
       version: '0.0.1',
-      servers: ['http://localhost:8008'],
     },
+    servers: [
+      { url: 'http://localhost:8080', description: 'Development server' },
+    ],
+    externalDocs: {
+      // url: 'http://localhost:8080/public/open-api-schema.json',
+    },
+    tags,
     components: {
       securitySchemes: {
         BearerAuth: {
@@ -29,6 +46,9 @@ const options: SwaggerOptions = {
 };
 
 const specs = swaggerJSDoc(options);
+
+const openApiSpecJson = JSON.stringify(specs, null, 2);
+fs.writeFileSync('src/public/open-api-spec.json', openApiSpecJson);
 
 const router: Router = Router();
 

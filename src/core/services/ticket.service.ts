@@ -4,7 +4,6 @@ import {
   ITicket,
   IUpdateTicketDto,
 } from '@core/interfaces/ticket.interface';
-import logger from '@core/utils/logger';
 import TicketRepository from 'database/repositories/ticket.repository';
 
 class TicketService {
@@ -18,14 +17,10 @@ class TicketService {
     ticketDto: ICreateTicketDto,
   ): Promise<{ success: boolean; data?: any; error?: string }> {
     try {
-      const response = await this.ticketRepository.create(ticketDto);
-      if (response instanceof Error) {
-        throw response;
-      }
-      return { success: true, data: response };
+      const data = await this.ticketRepository.create(ticketDto);
+      return { success: true, data };
     } catch (error) {
-      logger.error('Failed to create ticket:', error);
-      return { success: false, error: error.message };
+      return { success: false, error };
     }
   }
 
@@ -33,14 +28,10 @@ class TicketService {
     id: string,
   ): Promise<{ success: boolean; data?: any; error?: string }> {
     try {
-      const response = await this.ticketRepository.findOne(id);
-      if (response instanceof Error) {
-        throw response;
-      }
-      return { success: true, data: response };
+      const data = await this.ticketRepository.findOne(id);
+      return { success: true, data };
     } catch (error) {
-      logger.error('Failed to fetch ticket:', error);
-      return { success: false, error: error.message };
+      return { success: false, error };
     }
   }
 
@@ -50,18 +41,14 @@ class TicketService {
     error?: string;
   }> {
     try {
-      const response = await this.ticketRepository.findAll();
-      if (response instanceof Error) {
-        throw response;
-      }
-      return { success: true, data: response };
+      const data = await this.ticketRepository.findAll();
+      return { success: true, data };
     } catch (error) {
-      logger.error('Failed to fetch all tickets:', error);
-      return { success: false, error: error.message };
+      return { success: false, error };
     }
   }
 
-  async findUsersPaginated(
+  async findTicketsPaginated(
     page: number,
     pageSize: number,
   ): Promise<{ success: boolean; data?: PagedList<ITicket>; error?: string }> {
@@ -69,19 +56,18 @@ class TicketService {
       const offset = (page - 1) * pageSize;
       const [users, totalItems, totalPages] =
         await this.ticketRepository.findAndCountAll(offset, pageSize);
-      const pagedList: PagedList<ITicket> = {
+      const data: PagedList<ITicket> = {
         items: users,
         paginationMetadata: {
-          statusCode: 200,
           currentPage: page,
           pageSize,
           totalItems,
           totalPages,
         },
       };
-      return { success: true, data: pagedList };
+      return { success: true, data };
     } catch (error) {
-      return { success: false, error: error.message };
+      return { success: false, error };
     }
   }
 
@@ -90,35 +76,26 @@ class TicketService {
     id: string,
   ): Promise<{ success: boolean; data?: any; error?: string }> {
     try {
-      const response = await this.ticketRepository.update(updateTicketDto, id);
-      if (response instanceof Error) {
-        throw response;
-      }
-      return { success: true, data: response };
+      const data = await this.ticketRepository.update(updateTicketDto, id);
+      return { success: true, data };
     } catch (error) {
-      logger.error('Failed to update ticket:', error);
-      return { success: false, error: error.message };
+      return { success: false, error };
     }
   }
 
   async remove(
     id: string,
     hardDelete: boolean,
-  ): Promise<{ success: boolean; data?: any; error?: string }> {
+  ): Promise<{ success: boolean; error?: string }> {
     try {
-      let response;
       if (!hardDelete) {
-        response = await this.ticketRepository.softDelete(id);
+        await this.ticketRepository.softDelete(id);
       } else {
-        response = await this.ticketRepository.hardDelete(id);
+        await this.ticketRepository.hardDelete(id);
       }
-      if (response instanceof Error) {
-        throw response;
-      }
-      return { success: true, data: response };
+      return { success: true };
     } catch (error) {
-      logger.error('Failed to delete ticket:', error);
-      return { success: false, error: error.message };
+      return { success: false, error };
     }
   }
 
