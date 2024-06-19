@@ -11,7 +11,7 @@ class TicketTypeRepository {
   async create(ticketType: ICreateTicketTypeDto): Promise<ITicketType> {
     try {
       const [data] = await db('ticketTypes').insert(ticketType).returning('*');
-      if (data < 1) {
+      if (!data) {
         throw new Error('Failed to create ticket type');
       }
       return data;
@@ -24,7 +24,7 @@ class TicketTypeRepository {
   async findOne(id: string): Promise<ITicketType> {
     try {
       const [data] = await db('ticketTypes').where('id', id);
-      if (data < 1) {
+      if (!data) {
         throw new Error('Failed to update ticket type');
       }
       return data;
@@ -37,7 +37,7 @@ class TicketTypeRepository {
   async findAll(): Promise<ITicketType[]> {
     try {
       const data = await db('ticketTypes');
-      if (data < 1) {
+      if (!data) {
         throw new Error('Failed to find ticket type');
       }
       return data;
