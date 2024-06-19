@@ -44,7 +44,7 @@
     }
   },
   "paths": {
-    "/login": {
+    "/auth/login": {
       "post": {
         "summary": "User login",
         "description": "Authenticate a user and return a JWT token.",
@@ -65,12 +65,12 @@
                   "email": {
                     "type": "string",
                     "description": "The user's email.",
-                    "example": "user@example.com"
+                    "example": "superadmin@gmail.com"
                   },
                   "password": {
                     "type": "string",
                     "description": "The user's password.",
-                    "example": "password123"
+                    "example": "superadminpassword"
                   }
                 }
               }
@@ -518,7 +518,7 @@
         ]
       }
     },
-    "/user": {
+    "/users": {
       "post": {
         "summary": "Create a new user",
         "description": "Creates a new user in the system.",
@@ -532,10 +532,28 @@
               "schema": {
                 "type": "object",
                 "required": [
+                  "firstName",
+                  "lastName",
+                  "profilePic",
                   "email",
                   "password"
                 ],
                 "properties": {
+                  "firstName": {
+                    "type": "string",
+                    "description": "The user's first name.",
+                    "example": "John"
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "description": "The user's last name.",
+                    "example": "Doe"
+                  },
+                  "profilePic": {
+                    "type": "string",
+                    "description": "URL to the user's profile picture.",
+                    "example": "http://example.com/profile.jpg"
+                  },
                   "email": {
                     "type": "string",
                     "description": "The user's email.",
@@ -603,6 +621,21 @@
                         "description": "The ID of the user.",
                         "example": "123e4567-e89b-12d3-a456-4266-9c88-29676616ae26e"
                       },
+                      "firstName": {
+                        "type": "string",
+                        "description": "The user's first name.",
+                        "example": "John"
+                      },
+                      "lastName": {
+                        "type": "string",
+                        "description": "The user's last name.",
+                        "example": "Doe"
+                      },
+                      "profilePic": {
+                        "type": "string",
+                        "description": "URL to the user's profile picture.",
+                        "example": "http://example.com/profile.jpg"
+                      },
                       "email": {
                         "type": "string",
                         "description": "The user's email.",
@@ -630,7 +663,7 @@
         ]
       }
     },
-    "/user/{id}": {
+    "/users/{id}": {
       "get": {
         "summary": "Find a user by ID",
         "description": "Returns a single user by ID.",
@@ -660,6 +693,21 @@
                       "type": "string",
                       "description": "The ID of the user.",
                       "example": "123e4567-e89b-12d3-a456-4266-9c88-29676616ae26e"
+                    },
+                    "firstName": {
+                      "type": "string",
+                      "description": "The user's first name.",
+                      "example": "John"
+                    },
+                    "lastName": {
+                      "type": "string",
+                      "description": "The user's last name.",
+                      "example": "Doe"
+                    },
+                    "profilePic": {
+                      "type": "string",
+                      "description": "URL to the user's profile picture.",
+                      "example": "http://example.com/profile.jpg"
                     },
                     "email": {
                       "type": "string",
@@ -713,10 +761,28 @@
               "schema": {
                 "type": "object",
                 "required": [
+                  "firstName",
+                  "lastName",
+                  "profilePic",
                   "email",
                   "password"
                 ],
                 "properties": {
+                  "firstName": {
+                    "type": "string",
+                    "description": "The user's first name.",
+                    "example": "John"
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "description": "The user's last name.",
+                    "example": "Doe"
+                  },
+                  "profilePic": {
+                    "type": "string",
+                    "description": "URL to the user's profile picture.",
+                    "example": "http://example.com/profile.jpg"
+                  },
                   "email": {
                     "type": "string",
                     "description": "The user's email.",

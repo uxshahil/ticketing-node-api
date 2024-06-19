@@ -7,7 +7,7 @@ const authController = new AuthController();
 
 /**
  * @openapi
- * /login:
+ * /auth/login:
  *   post:
  *     summary: User login
  *     description: Authenticate a user and return a JWT token.
@@ -26,11 +26,11 @@ const authController = new AuthController();
  *               email:
  *                 type: string
  *                 description: The user's email.
- *                 example: user@example.com
+ *                 example: superadmin@gmail.com
  *               password:
  *                 type: string
  *                 description: The user's password.
- *                 example: password123
+ *                 example: superadminpassword
  *     responses:
  *       200:
  *         description: Login successful

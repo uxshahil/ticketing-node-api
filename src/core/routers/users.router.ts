@@ -1,16 +1,15 @@
-import { Router } from 'express';
-
 import { UserController } from '@core/controllers/user.controller';
 import authenticateToken from '@core/middlewares/auth.middleware';
 import validation from '@core/middlewares/validate.middleware';
 import userValidation from '@core/validators/user.validation';
+import { Router } from 'express';
 
 const router: Router = Router();
 const userController = new UserController();
 
 /**
  * @openapi
- * /user:
+ * /users:
  *   post:
  *     summary: Create a new user
  *     description: Creates a new user in the system.
@@ -23,9 +22,24 @@ const userController = new UserController();
  *           schema:
  *             type: object
  *             required:
+ *               - firstName
+ *               - lastName
+ *               - profilePic
  *               - email
  *               - password
  *             properties:
+ *               firstName:
+ *                 type: string
+ *                 description: The user's first name.
+ *                 example: John
+ *               lastName:
+ *                 type: string
+ *                 description: The user's last name.
+ *                 example: Doe
+ *               profilePic:
+ *                 type: string
+ *                 description: URL to the user's profile picture.
+ *                 example: http://example.com/profile.jpg
  *               email:
  *                 type: string
  *                 description: The user's email.
@@ -61,7 +75,7 @@ router.post(
 
 /**
  * @openapi
- * /user/{id}:
+ * /users/{id}:
  *   get:
  *     summary: Find a user by ID
  *     description: Returns a single user by ID.
@@ -86,6 +100,18 @@ router.post(
  *                   type: string
  *                   description: The ID of the user.
  *                   example: 123e4567-e89b-12d3-a456-4266-9c88-29676616ae26e
+ *                 firstName:
+ *                   type: string
+ *                   description: The user's first name.
+ *                   example: John
+ *                 lastName:
+ *                   type: string
+ *                   description: The user's last name.
+ *                   example: Doe
+ *                 profilePic:
+ *                   type: string
+ *                   description: URL to the user's profile picture.
+ *                   example: http://example.com/profile.jpg
  *                 email:
  *                   type: string
  *                   description: The user's email.
@@ -105,7 +131,7 @@ router.get('/users/:id', [authenticateToken], userController.findUser);
 
 /**
  * @openapi
- * /user:
+ * /users:
  *   get:
  *     summary: Retrieve all users
  *     description: Returns a list of users.
@@ -125,6 +151,18 @@ router.get('/users/:id', [authenticateToken], userController.findUser);
  *                     type: string
  *                     description: The ID of the user.
  *                     example: 123e4567-e89b-12d3-a456-4266-9c88-29676616ae26e
+ *                   firstName:
+ *                     type: string
+ *                     description: The user's first name.
+ *                     example: John
+ *                   lastName:
+ *                     type: string
+ *                     description: The user's last name.
+ *                     example: Doe
+ *                   profilePic:
+ *                     type: string
+ *                     description: URL to the user's profile picture.
+ *                     example: http://example.com/profile.jpg
  *                   email:
  *                     type: string
  *                     description: The user's email.
@@ -142,7 +180,7 @@ router.get('/users/', [authenticateToken], userController.findUsers);
 
 /**
  * @openapi
- * /user/{id}:
+ * /users/{id}:
  *   put:
  *     summary: Update a user by ID
  *     description: Updates a user in the system.
@@ -162,9 +200,24 @@ router.get('/users/', [authenticateToken], userController.findUsers);
  *           schema:
  *             type: object
  *             required:
+ *               - firstName
+ *               - lastName
+ *               - profilePic
  *               - email
  *               - password
  *             properties:
+ *               firstName:
+ *                 type: string
+ *                 description: The user's first name.
+ *                 example: John
+ *               lastName:
+ *                 type: string
+ *                 description: The user's last name.
+ *                 example: Doe
+ *               profilePic:
+ *                 type: string
+ *                 description: URL to the user's profile picture.
+ *                 example: http://example.com/profile.jpg
  *               email:
  *                 type: string
  *                 description: The user's email.
@@ -193,7 +246,7 @@ router.put(
 
 /**
  * @openapi
- * /user/{id}:
+ * /users/{id}:
  *   delete:
  *     summary: Delete a user by ID
  *     description: Deletes a single user by ID.
