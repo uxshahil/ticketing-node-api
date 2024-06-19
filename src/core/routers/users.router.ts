@@ -10,7 +10,7 @@ const userController = new UserController();
 
 /**
  * @openapi
- * /api/user:
+ * /user:
  *   post:
  *     summary: Create a new user
  *     description: Creates a new user in the system.
@@ -59,7 +59,7 @@ router.post(
 
 /**
  * @openapi
- * /api/user/{id}:
+ * /user/{id}:
  *   get:
  *     summary: Find a user by ID
  *     description: Returns a single user by ID.
@@ -103,7 +103,7 @@ router.get('/users/:id', [authenticateToken], userController.findUser);
 
 /**
  * @openapi
- * /api/user:
+ * /user:
  *   get:
  *     summary: Retrieve all users
  *     description: Returns a list of users.
@@ -140,7 +140,7 @@ router.get('/users/', [], userController.findUsers);
 
 /**
  * @openapi
- * /api/user/{id}:
+ * /user/{id}:
  *   put:
  *     summary: Update a user by ID
  *     description: Updates a user in the system.
@@ -191,7 +191,7 @@ router.put(
 
 /**
  * @openapi
- * /api/user/{id}:
+ * /user/{id}:
  *   delete:
  *     summary: Delete a user by ID
  *     description: Deletes a single user by ID.

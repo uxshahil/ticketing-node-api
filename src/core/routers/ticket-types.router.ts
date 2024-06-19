@@ -8,7 +8,7 @@ const ticketTypeController = new TicketTypeController();
 
 /**
  * @openapi
- * /api/ticket-types:
+ * /ticket-types:
  *   post:
  *     summary: Create a new ticket type
  *     description: Creates a new ticket type in the system.
@@ -48,7 +48,7 @@ router.post(
 
 /**
  * @openapi
- * /api/ticket-types:
+ * /ticket-types:
  *   get:
  *     summary: Retrieve all ticket types
  *     description: Returns a list of ticket types.
@@ -64,7 +64,7 @@ router.get('/ticket-types', ticketTypeController.findTicketTypes);
 
 /**
  * @openapi
- * /api/ticket-types/{id}:
+ * /ticket-types/{id}:
  *   get:
  *     summary: Find a ticket type by ID
  *     description: Returns a single ticket type by ID.
@@ -89,7 +89,7 @@ router.get('/ticket-types/:id', ticketTypeController.findTicketTypeById);
 
 /**
  * @openapi
- * /api/ticket-types/{id}:
+ * /ticket-types/{id}:
  *   put:
  *     summary: Update a ticket type by ID
  *     description: Updates a ticket type in the system.
@@ -135,7 +135,7 @@ router.put(
 
 /**
  * @openapi
- * /api/ticket-types/{id}:
+ * /ticket-types/{id}:
  *   delete:
  *     summary: Delete a ticket type by ID
  *     description: Deletes a single ticket type by ID.

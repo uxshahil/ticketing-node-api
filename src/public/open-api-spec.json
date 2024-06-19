@@ -11,7 +11,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:8080",
+      "url": "http://localhost:8080/v1/api",
       "description": "Development server"
     }
   ],
@@ -44,7 +44,7 @@
     }
   },
   "paths": {
-    "/api/login": {
+    "/login": {
       "post": {
         "summary": "User login",
         "description": "Authenticate a user and return a JWT token.",
@@ -107,7 +107,7 @@
         }
       }
     },
-    "/api/ticket-types": {
+    "/ticket-types": {
       "post": {
         "summary": "Create a new ticket type",
         "description": "Creates a new ticket type in the system.",
@@ -168,7 +168,7 @@
         }
       }
     },
-    "/api/ticket-types/{id}": {
+    "/ticket-types/{id}": {
       "get": {
         "summary": "Find a ticket type by ID",
         "description": "Returns a single ticket type by ID.",
@@ -282,7 +282,7 @@
         }
       }
     },
-    "/api/tickets": {
+    "/tickets": {
       "post": {
         "summary": "Create a new ticket",
         "description": "Creates a new ticket in the system.",
@@ -355,7 +355,7 @@
         }
       }
     },
-    "/api/tickets/{id}": {
+    "/tickets/{id}": {
       "get": {
         "summary": "Find a ticket by ID",
         "description": "Returns a single ticket by ID.",
@@ -479,7 +479,7 @@
         }
       }
     },
-    "/api/user": {
+    "/user": {
       "post": {
         "summary": "Create a new user",
         "description": "Creates a new user in the system.",
@@ -586,7 +586,7 @@
         ]
       }
     },
-    "/api/user/{id}": {
+    "/user/{id}": {
       "get": {
         "summary": "Find a user by ID",
         "description": "Returns a single user by ID.",

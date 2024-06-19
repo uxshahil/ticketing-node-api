@@ -26,7 +26,10 @@ const options: SwaggerOptions = {
       version: '0.0.1',
     },
     servers: [
-      { url: 'http://localhost:8080', description: 'Development server' },
+      {
+        url: 'http://localhost:8080/v1/api',
+        description: 'Development server',
+      },
     ],
     externalDocs: {
       // url: 'http://localhost:8080/public/open-api-schema.json',

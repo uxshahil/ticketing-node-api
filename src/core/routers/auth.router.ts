@@ -7,7 +7,7 @@ const authController = new AuthController();
 
 /**
  * @openapi
- * /api/login:
+ * /login:
  *   post:
  *     summary: User login
  *     description: Authenticate a user and return a JWT token.

@@ -8,7 +8,7 @@ const ticketController = new TicketController();
 
 /**
  * @openapi
- * /api/tickets:
+ * /tickets:
  *   post:
  *     summary: Create a new ticket
  *     description: Creates a new ticket in the system.
@@ -58,7 +58,7 @@ router.post(
 
 /**
  * @openapi
- * /api/tickets:
+ * /tickets:
  *   get:
  *     summary: Retrieve all tickets
  *     description: Returns a list of tickets.
@@ -74,7 +74,7 @@ router.get('/tickets', ticketController.findTickets);
 
 /**
  * @openapi
- * /api/tickets/{id}:
+ * /tickets/{id}:
  *   get:
  *     summary: Find a ticket by ID
  *     description: Returns a single ticket by ID.
@@ -99,7 +99,7 @@ router.get('/tickets/:id', ticketController.findTicketById);
 
 /**
  * @openapi
- * /api/tickets/{id}:
+ * /tickets/{id}:
  *   put:
  *     summary: Update a ticket by ID
  *     description: Updates a ticket in the system.
@@ -153,7 +153,7 @@ router.put(
 
 /**
  * @openapi
- * /api/tickets/{id}:
+ * /tickets/{id}:
  *   delete:
  *     summary: Delete a ticket by ID
  *     description: Deletes a single ticket by ID.
