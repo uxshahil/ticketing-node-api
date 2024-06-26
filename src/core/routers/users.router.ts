@@ -1,5 +1,7 @@
 import { UserController } from '@core/controllers/user.controller';
+import UserRole from '@core/enums/user-role.enum';
 import authenticateToken from '@core/middlewares/auth.middleware';
+import roleBasedAccess from '@core/middlewares/roleBasedAccess';
 import validation from '@core/middlewares/validate.middleware';
 import userValidation from '@core/validators/user.validation';
 import { Router } from 'express';
@@ -64,13 +66,77 @@ const userController = new UserController();
  *         description: Bad request
  *       500:
  *         description: Server error
+ */
+router.post('/users/', [validation(userValidation)], userController.createUser);
+
+/**
+ * @openapi
+ * /admins:
+ *   post:
+ *     summary: Create a new admin
+ *     description: Creates a new admin in the system.
+ *     tags:
+ *       - users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - firstName
+ *               - lastName
+ *               - profilePic
+ *               - email
+ *               - password
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *                 description: The user's first name.
+ *                 example: John
+ *               lastName:
+ *                 type: string
+ *                 description: The user's last name.
+ *                 example: Doe
+ *               profilePic:
+ *                 type: string
+ *                 description: URL to the user's profile picture.
+ *                 example: http://example.com/profile.jpg
+ *               email:
+ *                 type: string
+ *                 description: The user's email.
+ *                 example: user@example.com
+ *               password:
+ *                 type: string
+ *                 description: The user's password.
+ *                 example: password123
+ *     responses:
+ *       201:
+ *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   description: The ID of the newly created user.
+ *                   example: 123e4567-e89b-12d3-a456-4266-9c88-29676616ae26e
+ *       400:
+ *         description: Bad request
+ *       500:
+ *         description: Server error
  *     security:
  *       - BearerAuth: []
  */
 router.post(
-  '/users/',
-  [authenticateToken, validation(userValidation)],
-  userController.createUser,
+  '/admins',
+  [
+    authenticateToken,
+    roleBasedAccess(UserRole.SuperAdmin),
+    validation(userValidation),
+  ],
+  userController.createAdmin,
 );
 
 /**

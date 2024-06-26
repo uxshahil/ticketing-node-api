@@ -1,10 +1,13 @@
 import ApiBaseController from '@core/common/api-base.controller';
 import {
+  ICreateAdminDto,
   ICreateUserDto,
   IUpdateUserDto,
 } from '@core/interfaces/user.interface';
 import AuthService from '@core/services/auth.service';
 import UserService from '@core/services/user.service';
+import { JwtAuth } from '@core/types/jwtAuth.type';
+import { UserRole } from 'database/types/enums';
 import { Request, Response } from 'express';
 
 export class UserController extends ApiBaseController {
@@ -32,7 +35,44 @@ export class UserController extends ApiBaseController {
       this.error(res, error);
     }
 
-    const token = this.authService.generateToken(user.id);
+    const jwtAuth: JwtAuth = {
+      userId: user.id,
+      roles: [UserRole.Employee],
+    };
+
+    const token = this.authService.generateToken(jwtAuth);
+
+    const { success, data } = await this.userService.update(
+      { ...user, jwt: token },
+      user.id,
+    );
+
+    if (!success) {
+      this.error(res, error);
+    }
+
+    this.created(res, data, 'User created successfully');
+  };
+
+  createAdmin = async (req: Request, res: Response) => {
+    const createAdminDto: ICreateAdminDto = { ...req.body, admin: true };
+
+    const {
+      success: userCreated,
+      data: user,
+      error,
+    } = await this.userService.create(createAdminDto);
+
+    if (!userCreated) {
+      this.error(res, error);
+    }
+
+    const jwtAuth: JwtAuth = {
+      userId: user.id,
+      roles: [UserRole.Admin],
+    };
+
+    const token = this.authService.generateToken(jwtAuth);
 
     const { success, data } = await this.userService.update(
       { ...user, jwt: token },

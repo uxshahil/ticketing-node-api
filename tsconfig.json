@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "types": ["node"],
+    "types": ["node", "jest"],
     "typeRoots": ["node_modules/@types", "typings", "types/*.d.ts"],
     "lib": ["es2015", "es2016", "es2017", "es2018", "ESNext", "dom"],
     "module": "CommonJS",

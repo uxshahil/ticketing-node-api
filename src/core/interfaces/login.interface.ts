@@ -1,9 +1,6 @@
-export interface ILogin {
-  id: string;
-  email: string;
-  password: string;
-  jwt?: string;
-}
+import { LoginT } from '@core/types/login.type';
+
+export interface ILogin extends LoginT {}
 
 export interface ILoginMeta extends ILogin {
   createdAt?: Date;

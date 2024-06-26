@@ -35,6 +35,8 @@ export class TicketController extends ApiBaseController {
   };
 
   findTickets = async (req: Request, res: Response) => {
+    const sort = req?.body ?? undefined;
+
     const page =
       typeof req.query.page === 'string' ? parseInt(req.query.page, 10) : 1;
 
@@ -44,7 +46,7 @@ export class TicketController extends ApiBaseController {
         : 10; // Default page size
 
     const { success, data, error } =
-      await this.ticketService.findTicketsPaginated(page, pageSize);
+      await this.ticketService.findTicketsPaginated(page, pageSize, sort);
 
     if (!success) {
       this.error(res, error);

@@ -4,6 +4,7 @@ import {
   ICreateUserDto,
   IUpdateUserDto,
   IUser,
+  IUserVm,
 } from '@core/interfaces/user.interface';
 import UserRepository from 'database/repositories/user.repository';
 
@@ -87,7 +88,7 @@ class UserService {
   async update(
     user: IUpdateUserDto,
     id: string,
-  ): Promise<{ success: boolean; data?: IUser; error?: string }> {
+  ): Promise<{ success: boolean; data?: IUserVm; error?: string }> {
     try {
       const data = await this.userRepository.update(user, id);
       if (!data) {
@@ -117,7 +118,7 @@ class UserService {
 
   async findUserByEmail(
     id: string,
-  ): Promise<{ success: boolean; data?: IUser }> {
+  ): Promise<{ success: boolean; data?: IUserVm }> {
     try {
       const data = await this.userRepository.findUserByEmail(id);
       if (!data) {

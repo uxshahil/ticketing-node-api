@@ -2,9 +2,11 @@ import { PagedList } from '@core/common/dto/responses/paged-list.dto';
 import {
   ICreateTicketDto,
   ITicket,
+  ITicketVm,
   IUpdateTicketDto,
 } from '@core/interfaces/ticket.interface';
 import TicketRepository from 'database/repositories/ticket.repository';
+import { SortT } from 'database/types/sort';
 
 class TicketService {
   private ticketRepository: TicketRepository;
@@ -51,12 +53,17 @@ class TicketService {
   async findTicketsPaginated(
     page: number,
     pageSize: number,
-  ): Promise<{ success: boolean; data?: PagedList<ITicket>; error?: string }> {
+    sort?: SortT[],
+  ): Promise<{
+    success: boolean;
+    data?: PagedList<ITicketVm>;
+    error?: string;
+  }> {
     try {
       const offset = (page - 1) * pageSize;
       const [users, totalItems, totalPages] =
-        await this.ticketRepository.findAndCountAll(offset, pageSize);
-      const data: PagedList<ITicket> = {
+        await this.ticketRepository.findAndCountAll(offset, pageSize, sort);
+      const data: PagedList<ITicketVm> = {
         items: users,
         paginationMetadata: {
           currentPage: page,

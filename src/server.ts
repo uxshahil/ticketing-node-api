@@ -19,9 +19,9 @@ process.on('unhandledRejection', (reason: Error) => {
   throw reason;
 });
 
-process.on('SIGTERM', () => {
-  logger.info('SIGTERM received');
-  if (server) {
-    server.close();
-  }
-});
+// process.on('SIGTERM', () => {
+//   logger.info('SIGTERM received');
+//   if (server) {
+//     server.close();
+//   }
+// });

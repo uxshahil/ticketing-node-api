@@ -2,10 +2,10 @@ import { readPackage } from '@core/utils/package';
 import dotenv from 'dotenv';
 import Joi from 'joi';
 
-let env = dotenv.config({ path: '.env.local' }).parsed;
+let env = dotenv.config({ path: '.env.development' }).parsed;
 
-if (process.env.NODE_ENV === 'development') {
-  env = dotenv.config({ path: '.env.development' }).parsed;
+if (process.env.NODE_ENV === 'production') {
+  env = dotenv.config({ path: '.env.production' }).parsed;
 }
 
 // All env variables used by the app should be defined in this file.
@@ -19,9 +19,7 @@ if (process.env.NODE_ENV === 'development') {
 
 const envsSchema = Joi.object()
   .keys({
-    NODE_ENV: Joi.string()
-      .valid('local', 'production', 'development')
-      .required(),
+    NODE_ENV: Joi.string().valid('production', 'development').required(),
     PORT: Joi.number().default(8080),
     API_KEY_TOKEN: Joi.string().required(),
     DB_HOST: Joi.string().required(),

@@ -1,14 +1,11 @@
-export interface ITicket {
-  id: string;
-  description: string;
-  number: number;
+import { TicketT } from '@core/types/ticket.type';
+import { UserT } from '@core/types/user.type';
+import { TicketTypeT } from '../types/ticket-type.type';
+
+export interface ITicket extends TicketT {
   createdBy: string;
   ticketTypeId: string;
   assignedTo?: string;
-  dueDate: Date;
-  completedDate?: Date;
-  status: 'unassigned' | 'open' | 'paused' | 'closed';
-  priority: 'low' | 'medium' | 'high';
 }
 
 export interface ITicketMeta extends ITicket {
@@ -20,3 +17,9 @@ export interface ITicketMeta extends ITicket {
 export interface ICreateTicketDto extends Omit<ITicket, 'id'> {}
 
 export interface IUpdateTicketDto extends Partial<Omit<ITicket, 'id'>> {}
+
+export interface ITicketVm extends TicketT {
+  createdBy: UserT;
+  ticketType: TicketTypeT;
+  assignedto: UserT;
+}

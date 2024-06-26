@@ -2,10 +2,12 @@
 import {
   ICreateTicketDto,
   ITicket,
+  ITicketVm,
   IUpdateTicketDto,
 } from '@core/interfaces/ticket.interface';
 import logger from '@core/utils/logger';
 import db from 'database/database';
+import { SortT } from 'database/types/sort';
 
 class TicketRepository {
   async create(ticket: ICreateTicketDto): Promise<ITicket> {
@@ -50,20 +52,57 @@ class TicketRepository {
   async findAndCountAll(
     skip: number,
     take: number,
-  ): Promise<[ITicket[], number, number]> {
+    sort?: SortT[],
+  ): Promise<[ITicketVm[], number, number]> {
     try {
+      const s = sort.length > 0 ? sort : [{ column: 'number', order: 'desc' }];
+
       const [totalItemsQuery] = await db('tickets')
         .count('* as total')
         .whereNull('deletedAt');
 
-      const totalItems = totalItemsQuery.total;
+      const totalItems = Number(totalItemsQuery.total);
 
       const totalPages = Math.ceil(totalItems / take);
 
-      const data = await db('tickets')
-        .orderBy('createdAt')
-        .limit(take)
-        .offset(skip);
+      const data = await db.transaction(async (trx) => {
+        const ticketsWithCreatedBy = await trx('tickets')
+          .orderBy(s)
+          .limit(take)
+          .offset(skip)
+          .returning('*')
+          .transacting(trx);
+
+        // Map over the tickets to populate the createdBy field
+        const populatedTickets = await Promise.all(
+          ticketsWithCreatedBy.map(async (ticket: ITicket) => {
+            const createdByUser = await trx('users')
+              .select('firstName', 'lastName')
+              .where('id', ticket.createdBy)
+              .first();
+            const assignedTo =
+              (await trx('users')
+                .select('firstName', 'lastName')
+                .where('id', ticket.assignedTo)
+                .first()) ?? null; // Assuming you want the first matching user
+            const ticketType = await trx('ticket_types')
+              .select('title')
+              .where('id', ticket.ticketTypeId)
+              .first(); // Assuming you want the first matching user
+            return {
+              ...ticket,
+              createdBy: `${createdByUser.firstName} ${createdByUser.lastName}`,
+              assignedTo:
+                assignedTo !== null
+                  ? `${assignedTo.firstName} ${assignedTo.lastName}`
+                  : null,
+              ticketType: ticketType.title,
+            };
+          }),
+        );
+
+        return populatedTickets;
+      });
 
       if (!data || !totalItems || !totalPages) {
         throw new Error('Failed to read tickets');

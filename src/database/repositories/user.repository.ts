@@ -1,15 +1,23 @@
 /* eslint-disable class-methods-use-this */
 import {
+  ICreateAdminDto,
   ICreateUserDto,
   IUpdateUserDto,
   IUser,
+  IUserVm,
 } from '@core/interfaces/user.interface';
 import logger from '@core/utils/logger';
 import db from 'database/database';
+import OmitMeta from 'database/types/omit-meta.type';
+import omit from 'database/utils/omit-meta';
 
 class UserRepository {
-  async create(createUser: ICreateUserDto): Promise<IUser> {
+  async create(createUser: ICreateUserDto | ICreateAdminDto): Promise<IUser> {
     try {
+      let userRolesId = '4270206a-fb67-472c-8d50-06b20dc1e606';
+      if ('admin' in createUser) {
+        userRolesId = '0e3c2b5f-2e6a-4024-b106-5bf2ef3ff5e8';
+      }
       const [data] = await db.transaction(async (trx) => {
         const [newUser] = await trx('users')
           .insert({
@@ -37,7 +45,15 @@ class UserRepository {
           .returning('*')
           .transacting(trx);
 
-        if (!user) {
+        const userRole = await trx('user_userRoles')
+          .insert({
+            user_id: newUser.id,
+            user_roles_id: userRolesId,
+          })
+          .returning('*')
+          .transacting(trx);
+
+        if (!user || !userRole) {
           throw new Error('Failed to create user');
         }
         return user;
@@ -145,39 +161,44 @@ class UserRepository {
     }
   }
 
-  async update(user: IUpdateUserDto, id: string): Promise<IUser> {
+  async update(updateUserDto: IUpdateUserDto, id: string): Promise<IUserVm> {
     try {
       const data = await db.transaction(async (trx) => {
-        const updatedUser = await trx('users')
+        const [updatedUser] = await trx('users')
           .where('id', id)
           .update({
-            firstName: user.firstName,
-            lastName: user.lastName,
-            profilePic: user.profilePic,
+            firstName: updateUserDto.firstName,
+            lastName: updateUserDto.lastName,
+            profilePic: updateUserDto.profilePic,
           })
-          .returning('*');
+          .returning('*')
+          .transacting(trx);
 
-        await trx('logins')
-          .where('id', updatedUser[0].loginId)
-          .update({ password: user.password, jwt: user.jwt })
-          .returning('*');
+        const [login] = await trx('logins')
+          .where('id', updatedUser.loginId)
+          .update({ password: updateUserDto.password, jwt: updateUserDto.jwt })
+          .returning('*')
+          .transacting(trx);
 
-        const [users] = await trx('users as u')
-          .select(
-            'u.id',
-            'u.firstName',
-            'u.lastName',
-            'u.profilePic',
-            'u.loginId',
-            'l.email',
-            'l.password',
-            'l.jwt',
-          )
-          .leftJoin('logins as l', 'u.loginId', 'l.id')
+        const userRoles = await trx('user_roles as ur')
+          .select('ur.id', 'ur.user_role', 'ur.description')
+          .leftJoin('user_user_roles as uur', 'uur.user_roles_id', 'ur.id')
+          .where('uur.user_id', id)
+          .returning('*')
+          .transacting(trx);
+
+        const [user] = await trx('users as u')
+          .select('u.id', 'u.firstName', 'u.lastName', 'u.profilePic')
           .where('u.id', id)
-          .andWhere('u.deletedAt', null);
+          .andWhere('u.deletedAt', null)
+          .returning('*')
+          .transacting(trx);
 
-        return users;
+        return {
+          ...user,
+          login: omit(login, [...OmitMeta, 'password']),
+          userRoles,
+        } as IUserVm;
       });
 
       if (!data) {
@@ -218,22 +239,34 @@ class UserRepository {
     }
   }
 
-  async findUserByEmail(email: string): Promise<IUser> {
+  async findUserByEmail(email: string): Promise<IUserVm> {
     try {
-      const [data] = await db('users as u')
-        .select(
-          'u.id',
-          'u.firstName',
-          'u.lastName',
-          'u.profilePic',
-          'u.loginId',
-          'l.email',
-          'l.password',
-          'l.jwt',
-        )
-        .leftJoin('logins as l', 'u.loginId', 'l.id')
-        .where('l.email', email)
-        .andWhere('u.deletedAt', null);
+      const data = await db.transaction(async (trx) => {
+        const [user] = await trx('users as u')
+          .select('u.id', 'u.firstName', 'u.lastName', 'u.profilePic')
+          .leftJoin('logins as l', 'u.loginId', 'l.id')
+          .where('l.email', email)
+          .andWhere('u.deletedAt', null)
+          .transacting(trx);
+
+        const [login] = await trx('logins')
+          .select('id', 'email', 'password', 'jwt')
+          .where('email', email)
+          .transacting(trx);
+
+        const userRoles = await trx('user_roles as ur')
+          .select('ur.id', 'ur.user_role', 'ur.description')
+          .leftJoin('user_user_roles as uur', 'uur.user_roles_id', 'ur.id')
+          .where('uur.user_id', user.id)
+          .transacting(trx);
+
+        return {
+          ...user,
+          login,
+          userRoles,
+        } as IUserVm;
+      });
+
       if (!data) {
         throw new Error('Failed to read user');
       }

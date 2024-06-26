@@ -8,6 +8,7 @@ import errorHandling from '@core/middlewares/errorHandling.middleware';
 import uniqueReqId from '@core/middlewares/uniqueReqId.middleware';
 import httpLogger from '@core/utils/httpLogger';
 import logger from '@core/utils/logger';
+import cors from 'cors';
 
 import api from '@core/api';
 import databaseService from 'database/services/database-service';
@@ -39,6 +40,22 @@ if (config.autoMigrate === true) {
   logger.debug('Skipping database migrations. AUTO_MIGRATE is not enabled.');
 }
 
+app.use(
+  cors({
+    origin: 'http://localhost:5174', // Allow only requests from localhost:5174
+    allowedHeaders: [
+      'Origin',
+      'Content-Type',
+      'Accept',
+      'sentry-trace',
+      'Authorization',
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    credentials: true,
+    maxAge: 86400,
+    preflightContinue: false,
+  }),
+);
 app.use(httpContext.middleware);
 app.use(httpLogger.successHandler);
 app.use(httpLogger.errorHandler);

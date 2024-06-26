@@ -2,6 +2,8 @@ import ApiBaseController from '@core/common/api-base.controller';
 import { ILoginDto } from '@core/interfaces/login.interface';
 import { AuthService } from '@core/services/auth.service';
 import UserService from '@core/services/user.service';
+import { JwtAuth } from '@core/types/jwtAuth.type';
+import { UserRole } from 'database/types/enums';
 
 import { Request, Response } from 'express';
 
@@ -24,15 +26,24 @@ export class AuthController extends ApiBaseController {
       await this.userService.findUserByEmail(loginDto.email);
 
     if (!userExists) {
-      this.notFound(res, 'User');
+      this.unauthorized(res);
     }
 
-    if (loginDto.password !== user.password) {
+    if (loginDto.password !== user.login.password) {
       this.unauthorized(res);
       return;
     }
 
-    const token = this.authService.generateToken(user.id);
+    const userRoles: UserRole[] = user.userRoles.map(
+      (record) => record.userRole,
+    );
+
+    const jwtAuth: JwtAuth = {
+      userId: user.id,
+      roles: userRoles,
+    };
+
+    const token = this.authService.generateToken(jwtAuth);
 
     const { success, data } = await this.userService.update(
       { ...user, jwt: token },

@@ -27,7 +27,7 @@ const options: SwaggerOptions = {
     },
     servers: [
       {
-        url: 'http://localhost:8080/v1/api',
+        url: 'http://localhost:8080/v1',
         description: 'Development server',
       },
     ],
@@ -56,18 +56,7 @@ fs.writeFileSync('src/public/open-api-spec.json', openApiSpecJson);
 const router: Router = Router();
 
 if (config.env !== 'production') {
-  router.use(
-    consts.API_DOCS_PATH,
-    swaggerUi.serve,
-    swaggerUi.setup(specs, {
-      swaggerOptions: {
-        requestInterceptor: (request) => {
-          request.headers.Authorization = 'Bearer YOUR_TOKEN_HERE';
-          return request;
-        },
-      },
-    }),
-  );
+  router.use(consts.API_DOCS_PATH, swaggerUi.serve, swaggerUi.setup(specs));
 } else {
   router.use(consts.API_DOCS_PATH, swaggerForbidden);
 }

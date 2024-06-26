@@ -1,4 +1,5 @@
 import config from '@config/config';
+import { JwtAuth } from '@core/types/jwtAuth.type';
 import jwt from 'jsonwebtoken';
 
 export class AuthService {
@@ -8,8 +9,7 @@ export class AuthService {
     this.secretKey = config.jwtSecret;
   }
 
-  generateToken(userId: string): string {
-    const payload = { userId };
+  generateToken(payload: JwtAuth): string {
     const token = jwt.sign(payload, this.secretKey, { expiresIn: '1h' });
     return token;
   }
