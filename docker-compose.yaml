@@ -8,7 +8,7 @@ services:
     environment:
       POSTGRES_PASSWORD: ticketing@2024!
       POSTGRES_DB: 'ticketing'
-  web:
+  api:
     build:
       context: .
       dockerfile: Dev.Dockerfile
