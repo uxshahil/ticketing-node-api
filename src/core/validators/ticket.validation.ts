@@ -3,14 +3,15 @@ import Joi from 'joi';
 
 const ticketValidation: ValidationSchema = {
   body: Joi.object().keys({
-    description: Joi.string().required(),
-    number: Joi.number().integer().required(),
+    description: Joi.string(),
     createdBy: Joi.string().uuid().required(),
     ticketTypeId: Joi.string().uuid().required(),
     assignedTo: Joi.string().uuid(),
     dueDate: Joi.date().iso(),
     completedDate: Joi.date().iso(),
-    status: Joi.string().valid('unassigned', 'open', 'paused', 'closed'),
+    status: Joi.string()
+      .valid('unassigned', 'open', 'paused', 'closed')
+      .required(),
     priority: Joi.string().valid('low', 'medium', 'high').required(),
   }),
 };

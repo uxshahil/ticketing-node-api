@@ -12,7 +12,11 @@ import { SortT } from 'database/types/sort';
 class TicketRepository {
   async create(ticket: ICreateTicketDto): Promise<ITicket> {
     try {
-      const [data] = await db('tickets').insert(ticket).returning('*');
+      const ticketData = await this.findAndCountAll(0, 1);
+      const number = ticketData[1] + 1;
+      const [data] = await db('tickets')
+        .insert({ ...ticket, number })
+        .returning('*');
       if (!data) {
         throw new Error('Failed to read user');
       }
@@ -55,7 +59,7 @@ class TicketRepository {
     sort?: SortT[],
   ): Promise<[ITicketVm[], number, number]> {
     try {
-      const s = sort.length > 0 ? sort : [{ column: 'number', order: 'desc' }];
+      const s = sort?.length > 0 ? sort : [{ column: 'number', order: 'desc' }];
 
       const [totalItemsQuery] = await db('tickets')
         .count('* as total')

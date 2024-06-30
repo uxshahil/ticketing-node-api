@@ -14,9 +14,10 @@ export interface ITicketMeta extends ITicket {
   deletedAt?: Date;
 }
 
-export interface ICreateTicketDto extends Omit<ITicket, 'id'> {}
+export interface ICreateTicketDto extends Omit<ITicket, 'id' | 'number'> {}
 
-export interface IUpdateTicketDto extends Partial<Omit<ITicket, 'id'>> {}
+export interface IUpdateTicketDto
+  extends Partial<Omit<ITicket, 'id' | 'number'>> {}
 
 export interface ITicketVm extends TicketT {
   createdBy: UserT;
