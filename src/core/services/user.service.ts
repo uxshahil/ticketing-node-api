@@ -6,6 +6,7 @@ import {
   IUser,
   IUserVm,
 } from '@core/interfaces/user.interface';
+import { hash } from 'bcrypt';
 import UserRepository from 'database/repositories/user.repository';
 
 class UserService {
@@ -72,10 +73,14 @@ class UserService {
   }
 
   async create(
-    user: ICreateUserDto,
+    createUserDto: ICreateUserDto,
   ): Promise<{ success: boolean; data?: IUser; error?: string }> {
     try {
-      const data = await this.userRepository.create(user);
+      const hashedPassword = await this.hashPassword(createUserDto.password);
+      const data = await this.userRepository.create({
+        ...createUserDto,
+        password: hashedPassword,
+      });
       if (!data) {
         throw new Error('Db Error');
       }
@@ -86,11 +91,11 @@ class UserService {
   }
 
   async update(
-    user: IUpdateUserDto,
+    updateUserDto: IUpdateUserDto,
     id: string,
   ): Promise<{ success: boolean; data?: IUserVm; error?: string }> {
     try {
-      const data = await this.userRepository.update(user, id);
+      const data = await this.userRepository.update(updateUserDto, id);
       if (!data) {
         throw new Error('Db Error');
       }
@@ -128,6 +133,11 @@ class UserService {
     } catch (error) {
       return { success: false };
     }
+  }
+
+  private async hashPassword(password: string): Promise<string> {
+    const saltRounds = 10;
+    return hash(password, saltRounds);
   }
 }
 

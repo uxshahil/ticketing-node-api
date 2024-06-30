@@ -1,6 +1,6 @@
 import UserRole from '@core/enums/user-role.enum';
 import { NextFunction, Request, Response } from 'express';
-import jwt from 'jsonwebtoken'; // Ensure you have jsonwebtoken installed
+import jwt from 'jsonwebtoken';
 
 export const roleBasedAccess =
   (requiredRole: UserRole) =>

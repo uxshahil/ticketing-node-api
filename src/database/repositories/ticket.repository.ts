@@ -73,7 +73,6 @@ class TicketRepository {
           .returning('*')
           .transacting(trx);
 
-        // Map over the tickets to populate the createdBy field
         const populatedTickets = await Promise.all(
           ticketsWithCreatedBy.map(async (ticket: ITicket) => {
             const createdByUser = await trx('users')
@@ -84,11 +83,11 @@ class TicketRepository {
               (await trx('users')
                 .select('firstName', 'lastName')
                 .where('id', ticket.assignedTo)
-                .first()) ?? null; // Assuming you want the first matching user
+                .first()) ?? null;
             const ticketType = await trx('ticket_types')
               .select('title')
               .where('id', ticket.ticketTypeId)
-              .first(); // Assuming you want the first matching user
+              .first();
             return {
               ...ticket,
               createdBy: `${createdByUser.firstName} ${createdByUser.lastName}`,

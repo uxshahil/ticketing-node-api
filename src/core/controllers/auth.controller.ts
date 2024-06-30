@@ -3,8 +3,8 @@ import { ILoginDto } from '@core/interfaces/login.interface';
 import { AuthService } from '@core/services/auth.service';
 import UserService from '@core/services/user.service';
 import { JwtAuth } from '@core/types/jwtAuth.type';
+import { compare } from 'bcrypt';
 import { UserRole } from 'database/types/enums';
-
 import { Request, Response } from 'express';
 
 export class AuthController extends ApiBaseController {
@@ -29,7 +29,12 @@ export class AuthController extends ApiBaseController {
       this.unauthorized(res);
     }
 
-    if (loginDto.password !== user.login.password) {
+    const verifyPassword = await compare(
+      loginDto.password,
+      user.login.password,
+    );
+
+    if (!verifyPassword) {
       this.unauthorized(res);
       return;
     }

@@ -1,12 +1,19 @@
 import { IUser } from '@core/interfaces/user.interface';
+import { hash } from 'bcrypt';
 import type { Knex } from 'knex';
+
+async function hashPassword(password: string): Promise<string> {
+  const saltRounds = 10;
+  return hash(password, saltRounds);
+}
 
 export async function up(knex: Knex): Promise<void> {
   await knex.transaction(async (trx) => {
+    const hashedPassword = await hashPassword('superadminpassword');
     const [{ id: loginId }] = await trx('logins')
       .insert({
         email: 'superadmin@gmail.com',
-        password: 'superadminpassword',
+        password: hashedPassword,
       })
       .returning('id');
 
@@ -26,10 +33,11 @@ export async function up(knex: Knex): Promise<void> {
   });
 
   await knex.transaction(async (trx) => {
+    const hashedPassword = await hashPassword('shahil');
     const [{ id: loginId }] = await trx('logins')
       .insert({
         email: 'shahil@gmail.com',
-        password: 'shahil',
+        password: hashedPassword,
       })
       .returning('id');
 
@@ -54,10 +62,11 @@ export async function up(knex: Knex): Promise<void> {
   });
 
   await knex.transaction(async (trx) => {
+    const hashedPassword = await hashPassword('nick');
     const [{ id: loginId }] = await trx('logins')
       .insert({
         email: 'nick@gmail.com',
-        password: 'nick',
+        password: hashedPassword,
       })
       .returning('id');
 

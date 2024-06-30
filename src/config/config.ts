@@ -2,7 +2,15 @@ import { readPackage } from '@core/utils/package';
 import dotenv from 'dotenv';
 import Joi from 'joi';
 
-let env = dotenv.config({ path: '.env.development' }).parsed;
+let env;
+
+if (process.env.NODE_ENV === 'local') {
+  env = dotenv.config({ path: '.env.local' }).parsed;
+}
+
+if (process.env.NODE_ENV === 'development') {
+  env = dotenv.config({ path: '.env.development' }).parsed;
+}
 
 if (process.env.NODE_ENV === 'production') {
   env = dotenv.config({ path: '.env.production' }).parsed;
@@ -19,7 +27,9 @@ if (process.env.NODE_ENV === 'production') {
 
 const envsSchema = Joi.object()
   .keys({
-    NODE_ENV: Joi.string().valid('production', 'development').required(),
+    NODE_ENV: Joi.string()
+      .valid('production', 'development', 'local')
+      .required(),
     PORT: Joi.number().default(8080),
     API_KEY_TOKEN: Joi.string().required(),
     DB_HOST: Joi.string().required(),

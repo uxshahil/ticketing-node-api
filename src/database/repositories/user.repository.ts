@@ -78,8 +78,6 @@ class UserRepository {
           'u.profilePic',
           'u.loginId',
           'l.email',
-          'l.password',
-          'l.jwt',
         )
         .leftJoin('logins as l', 'u.loginId', 'l.id')
         .where('u.id', id)
@@ -104,8 +102,6 @@ class UserRepository {
           'u.profilePic',
           'u.loginId',
           'l.email',
-          'l.password',
-          'l.jwt',
         )
         .leftJoin('logins as l', 'u.loginId', 'l.id')
         .whereNull('u.deletedAt');
@@ -139,8 +135,6 @@ class UserRepository {
           'u.profilePic',
           'u.loginId',
           'l.email',
-          'l.password',
-          'l.jwt',
         )
         .leftJoin('logins as l', 'u.loginId', 'l.id')
         .whereNull('u.deletedAt')

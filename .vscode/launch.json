@@ -10,6 +10,7 @@
       "sourceMapPathOverrides": {
         "app/*": "${workspaceRoot}/*"
       },
+      "env": { "NODE_ENV": "local" },
       "remoteRoot": "/app/"
     }
   ]

@@ -9,7 +9,7 @@ export async function up(knex: Knex): Promise<void> {
         .uuid('id', { primaryKey: true, useBinaryUuid: true })
         .defaultTo(knex.raw('uuid_generate_v4()'));
       table.string('email', 100).notNullable().unique();
-      table.string('password', 25).notNullable();
+      table.string('password', 60).notNullable();
       table.text('jwt');
       table.timestamps(true, true);
       table.timestamp('deleted_at');

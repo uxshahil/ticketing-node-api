@@ -25,10 +25,11 @@ interface EnvironmentConfig {
 interface Config {
   development: EnvironmentConfig;
   production?: EnvironmentConfig;
+  local?: EnvironmentConfig;
 }
 
 const dbConfig: Config = {
-  development: {
+  local: {
     client: 'postgresql',
     connection: {
       host: '127.0.0.1',
@@ -37,6 +38,25 @@ const dbConfig: Config = {
       database: 'ticketing',
       password: 'ticketing@2024!',
       ssl: false,
+    },
+    migrations: {
+      tableName: 'knex_migrations',
+      directory: 'src/database/migrations',
+    },
+    ...knexSnakeCaseMappers(),
+    postProcessResponse: (result) => {
+      return convertKeysToCamelCase(result);
+    },
+  },
+  development: {
+    client: 'postgresql',
+    connection: {
+      host: process.env.DB_HOST!,
+      port: parseInt(process.env.DB_PORT!, 10),
+      user: process.env.DB_USER!,
+      database: process.env.DB_NAME!,
+      password: process.env.DB_PASSWORD!,
+      ssl: process.env.DB_SSL === 'true',
     },
     migrations: {
       tableName: 'knex_migrations',
